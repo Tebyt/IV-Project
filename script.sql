@@ -68,7 +68,7 @@ where touserarray REGEXP 'i\\:{1}';
 
 # this query give us connection in pm
 # notice that touserid = 0 does not have a name specified in touserarray so we couldn't fix
-SELECT date, fromuserid, touserid
+SELECT date, fromuserid, touserid, title, message
 FROM	
     (SELECT fromuserid, 
 		# touserarray is like 'a:1:{i:6153;s:5:"ZEL0S";}' 
@@ -77,7 +77,9 @@ FROM
 		@length := INSTR(SUBSTRING(touserarray, @beginIndex),';')-1,
 		CONVERT(SUBSTRING(touserarray, @beginIndex, @length), UNSIGNED INTEGER)
 			AS touserid,
-		dateline AS date
+		dateline AS date,
+        title,
+        message
 	FROM carderscc_01.pmtext) AS t1
 WHERE fromuserid > 1 AND touserid > 0 # exclude system messages
 ORDER BY date ASC;
