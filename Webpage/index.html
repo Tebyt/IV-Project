@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified jQuery -->
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified d3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+    <!-- Support of tag_cloud -->
+    <!-- Source: https://github.com/jasondavies/d3-cloud-->
+    <script src="js/tag_cloud.js" charset="utf-8"></script>
+
+    <style>
+        #cover {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        
+        #table_search_result {
+            display: none;
+            background: #FFFFFF;
+        }
+        
+        #div_search {
+            position: absolute;
+            width: inherit;
+            top: 20px;
+            z-index: 10;
+        }
+        
+        #div_search_result {
+            position: absolute;
+            width: inherit;
+            top: 60px;
+        }
+        
+        #div_user_info {
+            height: 350px;
+            border-bottom: 1px solid;
+        }
+        
+        #div_left_search_result {
+            border-right: 1px solid;
+        }
+        
+        #timeline {
+            display: none;
+        }
+        - See more at: http: //www.corelangs.com/css/box/fulloverlay.html#sthash.6HaGnWj1.dpuf
+    </style>
+
+
+    <script>
+        //        var data = d3.csv("https://raw.githubusercontent.com/CristianFelix/infoviz/master/data.csv");
+
+
+        function search(value) {
+            if (!value) {
+                d3.select("#table_search_result").style({
+                    "display": "none"
+                });
+                d3.select("#cover").style({
+                    "display": "none"
+                });
+            } else {
+                d3.select("#table_search_result").style({
+                    "display": "table"
+                });
+                d3.select("#cover").style({
+                    "display": "block"
+                });
+            }
+        };
+        
+        function mock() {
+            d3.select("#div_user_info").style({
+                    "display": "none"
+                });
+            d3.select("#div_connection").style({
+                    "display": "none"
+                });
+            d3.select("#timeline").style({
+                    "display": "block"
+                });
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row" id="div_search">
+            <div class="col-lg-12">
+                <input type="text" class="form-control" placeholder="Search" onkeyup="search(this.value)">
+            </div>
+            <div class="col-lg-12">
+                <table class="table table-striped table-hover" id="table_search_result">
+                    <tr>
+                        <td>ID</td>
+                        <td>UserName</td>
+                        <td>Email</td>
+                    </tr>
+                    <tr>
+                        <td>3443</td>
+                        <td>Foo</td>
+                        <td>sample@gmail.com</td>
+                    </tr>
+                    <tr>
+                        <td>3443</td>
+                        <td>Foo</td>
+                        <td>sample@gmail.com</td>
+                    </tr>
+                    <tr>
+                        <td>3443</td>
+                        <td>Foo</td>
+                        <td>sample@gmail.com</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row" id="div_search_result">
+            <div class="col-lg-6" id="div_left_search_result">
+                <div class="row">
+
+                    <div class="col-lg-12" id="div_user_info">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active">
+                                <a href="#Overview" role="tab" data-toggle="tab">Overview</a>
+                            </li>
+                            <li role="presentation"><a href="#Post" role="tab" data-toggle="tab">Post</a>
+                            </li>
+                            <li role="presentation"><a href="#PM" role="tab" data-toggle="tab">PM</a>
+                            </li>
+                            <li role="presentation"><a href="#Quote" role="tab" data-toggle="tab">Quote</a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="Overview">Overview</div>
+                            <div role="tabpanel" class="tab-pane" id="Post">Post</div>
+                            <div role="tabpanel" class="tab-pane" id="PM">PM</div>
+                            <div role="tabpanel" class="tab-pane" id="Quote">Quote</div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" id="div_tag_cloud">
+                        <h3>Major topics related to the user</h3>
+                        <script>
+                            var fill = d3.scale.category20();
+
+                            d3.layout.cloud().size([300, 300])
+                                .words([
+        ".NET", "Silverlight", "jQuery", "CSS3", "HTML5", "JavaScript", "SQL", "C#"].map(function (d) {
+                                    return {
+                                        text: d,
+                                        size: 10 + Math.random() * 50
+                                    };
+                                }))
+                                .rotate(function () {
+                                    return ~~(Math.random() * 2) * 90;
+                                })
+                                .font("Impact")
+                                .fontSize(function (d) {
+                                    return d.size;
+                                })
+                                .on("end", draw)
+                                .start();
+
+                            function draw(words) {
+                                d3.select("#div_tag_cloud").append("svg")
+                                    .attr("width", 300)
+                                    .attr("height", 300)
+                                    .append("g")
+                                    .attr("transform", "translate(150,150)")
+                                    .selectAll("text")
+                                    .data(words)
+                                    .enter().append("text")
+                                    .style("font-size", function (d) {
+                                        return d.size + "px";
+                                    })
+                                    .style("font-family", "Impact")
+                                    .style("fill", function (d, i) {
+                                        return fill(i);
+                                    })
+                                    .attr("text-anchor", "middle")
+                                    .attr("transform", function (d) {
+                                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                                    })
+                                    .text(function (d) {
+                                        return d.text;
+                                    });
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6" id="div_connection">
+                <img src="res/bar_chart.png" width="100%">
+                <pre>
+Use Stacked Bar Chart 
+http://bl.ocks.org/mbostock/3886208
+                
+Each bar indicates the total connections with the selected user
+Every bar is divided into pm, and quote (and thanks?)
+The chart is placing vertically
+                </pre>
+                <button onclick="mock()">mock-user-selected</button>
+            </div>
+            
+            
+            <div class="col-lg-12" id="timeline">
+                <img src="res/timeline.png" width="100%" height="300px">
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+    <div id="search_result"></div>
+    <div id="user_info"></div>
+    <div id="tag_cloud"></div>
+    <div id="connections"></div>
+
+    <div id="cover"> </div>
+
+
+</body>
+
+</html>
