@@ -17,7 +17,7 @@ size <- length(fromusers);
 
 
 
-usernames = head(unique(fromusers), 200);
+# usernames = head(unique(fromusers), 200);
 # matched <- logical(length(usernames));
 # for (i in 1:size) {
 #   match <- which(usernames == fromusers[i]);
