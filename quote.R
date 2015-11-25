@@ -162,6 +162,8 @@ table_quote = buildQuote(table_post, startTag, endTag);
 
 write.csv(table_quote, file="csv/quote.csv", row.names=FALSE);
 
+# write(toJSON(unname(split(table_quote, 1:nrow(table_quote)))), "json/quote.json");
+
 ###########################
 ## For profiling:
 # fileName <- "prof_main.txt";
