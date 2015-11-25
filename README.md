@@ -1,5 +1,7 @@
 # IV-Project
 
+This is our reference for the interface. 
+
 ## Files
 ### Preprocessing
 * **data.sql** generates csv files
@@ -39,14 +41,27 @@ var data = {
 
 ```
 
+## Functions
+Every function need to past in  
+
+```
+function displayNetwork(data, attr) {
+	
+}
+```
+
 
 ## Sub Visualization Prefix
 We need to use prefix to name every element to prevent conflict when merging our works.
-
-e.g.:
  
-\<circle id="barchart_circle" />
+**\<circle id="barchart_circle" />**
 
 When you use d3.select or css, only select element by ID
+
+This will also be the prefix for your auxiliary functions
+
+** function network_addCircle() {}**
+
+
 
 * **network_ ** for network overview
