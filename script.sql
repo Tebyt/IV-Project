@@ -1,25 +1,37 @@
+# Every post is bound to a distinct threadid
+
+SELECT threadid, count(DISTINCT importthreadid) as count FROM carderscc_01.post
+where importthreadid != 0
+GROUP BY threadid
+ORDER BY count DESC;
+
+SELECT count(*) from carderscc_01.post
+where threadid = 0;
+
 # the post table has rows with userid being 0 while a username is presented
 # so we use the user table to fetch the userid connected with that username
 DROP TABLE fixed_post;
 CREATE TABLE fixed_post
-		SELECT userid, pagetext, dateline, importpostid, postid
+		SELECT userid, pagetext, dateline, importpostid, postid, threadid
 		FROM carderscc_01.post
 		WHERE userid != 0
 	UNION
-		SELECT userid, pagetext, dateline, importpostid, postid
+		SELECT userid, pagetext, dateline, importpostid, postid, threadid
 		FROM
-			(SELECT username, pagetext, dateline, importpostid, postid
+			(SELECT username, pagetext, dateline, importpostid, postid, threadid
 			FROM carderscc_01.post
 			WHERE userid = 0) AS t1
 		LEFT JOIN
 			(SELECT username, userid
 			FROM carderscc_01.user) AS t2 
-		ON t1.username = t2.username;
+		ON t1.username = t2.username
+        WHERE userid IS NOT NULL;
         
 
 # this query return 0 row, which shows that now all the posts are associated with a userid
 SELECT * FROM fixed_post
 WHERE userid = 0;
+
 
 # this query gives us post assoicated with quote
 SELECT * FROM fixed_post #42063
@@ -47,7 +59,7 @@ SELECT t1.dateline AS date, t1.userid, t2.userid AS receiverid, t2.postid
 From
 		(SELECT * FROM carderscc_01.thanks) AS t1
 	inner join
-		(select * from fixed_post) as t2
+		(select * from fixed_post) AS t2
 	ON t1.postid = t2.postid
 ORDER BY date ASC;
 
