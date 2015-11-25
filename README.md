@@ -42,11 +42,14 @@ var data = {
 ```
 
 ## Functions
-Every function need to past in  
+Don't access any global variable inside function (always pass in)
 
 ```
 function displayNetwork(data, attr) {
-	
+attr specifies what attributes user wants the network graph to show as a circle
+e.g. Most post user, Reputable user
+
+The function will draw graph in <svg id = "network_viz">	
 }
 ```
 
