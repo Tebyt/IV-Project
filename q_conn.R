@@ -6,7 +6,7 @@ usernames <- read.csv("csv/user.csv",
                       colClasses = c("character"),
                       stringsAsFactors = FALSE);
 usernames <- usernames$username;
-
+josn <- toJSON(unname(split(table_quote, 1:nrow(table_quote))));
 
 
 # table_quote <- table_quote[order(table_quote$fromuser),];
