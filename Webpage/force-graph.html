@@ -34,7 +34,7 @@ var svg = d3.select("body").append("svg")
 
 var cp;
 
-d3.json("quote.json", function(error, graph) {
+d3.json("q_conn.json", function(error, graph) {
   if (error) throw error;
   force
       .nodes(graph.nodes)

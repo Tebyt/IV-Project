@@ -65,6 +65,6 @@ library(rjson)
 nodes <- toJSON(unname(split(nodes, 1:nrow(nodes))))
 links <- toJSON(unname(split(links, 1:nrow(links))))
 finalString <- paste0("{","\"nodes\":",nodes,",", "\"links\":",links,"}");
-write(finalString, "Webpage/quote.json");
+write(finalString, "Webpage/q_conn.json");
 # write.csv(cons, file="csv/quote_con.csv", row.names=FALSE);
 # write.csv(users, file="csv/user_con.csv", row.names=FALSE);
