@@ -11,13 +11,80 @@
   stroke: #999;
   stroke-opacity: .6;
 }
-
+ 
 </style>
-<body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<body  >
+    
+
+<script src="d3.min.js"></script>
+<script src="lodash.js"></script>
+
 <script>
 
+//var  RadialPlacement = {
+/*    //stores the key -> location values
+    values= d3.map()
+    //how much to separate each location by
+    increment= 20
+    //how large to make the layout
+    radius=200
+    //where the center of the layout should be
+    center= {"x":0, "y":0}
+    //what angle to start at
+    start=-120
+    current=start
+ 
+    /*
+        # Given a set of keys, perform some
+        # magic to create a two ringed radial layout.
+        # Expects radius, increment, and center to be set.
+        # If there are a small number of keys, just make
+        # one circle.
+    *
+    setKeys= function(keys){
+        //# start with an empty values
+        values = d3.map()
 
+        //# number of keys to go in first circle
+        firstCircleCount = 360 / increment
+
+        //# if we don't have enough keys, modify increment
+        //# so that they all fit in one circle
+        if( keys.length < firstCircleCount){
+            increment = 360 / keys.length     
+        }
+        //# set locations for inner circle     firstCircleKeys = keys.slice(0,firstCircleCount)     firstCircleKeys.forEach (k) -> place(k)
+
+        //# set locations for outer circle
+        secondCircleKeys = keys.slice(firstCircleCount)
+
+        //# setup outer circle
+        radius = radius + radius / 1.8
+        increment = 360 / secondCircleKeys.length
+
+        secondCircleKeys.forEach (function(k){
+            value = radialLocation(center, current, radius)
+            values.set(key,value)
+            current += increment
+            return value;
+        }); 
+    }
+    //# Gets a new location for input key
+    place= function(key){
+        value = radialLocation(center, current, radius)
+        values.set(key,value)
+        current += increment
+        return value;
+    }
+    //# Given an center point, angle, and radius length,
+    //# return a radial position for that angle
+    radialLocation= function(center, angle, radius){
+        x = (center.x + radius * Math.cos(angle * Math.PI / 180))
+        y = (center.y + radius * Math.sin(angle * Math.PI / 180))
+        return {"x":x,"y":y}
+    }
+//}
+*/    
 var width = 1000,
     height = 700;
 
@@ -33,47 +100,160 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 var cp;
-
-d3.csv("quote.csv", function(error, links) {
+var nodes = {};
+var links; 
+  
+d3.csv("quotes.csv", function(error, inlinks) {
     if (error) throw error;
-    var nodes = {};
+    links = inlinks;
     links.forEach(function(link) {
-    link.source = nodes[link.fromuser] || 
-        (nodes[link.fromuser] = {name: link.fromuser});
-    link.target = nodes[link.touser] || 
-        (nodes[link.touser] = {name: link.touser});
-});
-    
+        link.source = nodes[link.fromuser] || 
+            (nodes[link.fromuser] = {name: link.fromuser});
+        link.target = nodes[link.touser] || 
+            (nodes[link.touser] = {name: link.touser});
+    });
+    console.log(nodes, links)
+
+    //Assign each node their most active forum
+    d3.csv("usersGroupByMostActiveForum.csv", function(error, node_display ){
+        console.log("done loading most active forum!")
+         
+        for (var key in nodes) {
+            if (nodes.hasOwnProperty(key)) {
+                currnode = nodes[key];
+                //find the currnode in node_display
+                 for(indRem = 0; indRem<node_display.length; indRem++){
+                    if(node_display[indRem].username == currnode.name){
+                        //If found, then add the active_forum information to currnode
+                        nodes[currnode.name].most_active_forum = node_display[indRem].most_active_forum;
+                        break;
+                    }
+                }
+             }
+        }
+        
+        //break the nodes and links based on the forums the nodes are most active in
+        //ex. groups = [ {groupname, nodes, links}, ...]
+        var groups = []; 
+        //Iterate through all the nodes. Create groups of users based on their active forums
+        for (var key in nodes) {            
+            if (nodes.hasOwnProperty(key)) {
+                currnode = nodes[key];
+                //find the group the node belongs to
+                var groupIndex = _.findIndex(groups, function(group) {
+                    return group.groupname == currnode.most_active_forum
+                });
+                if(groupIndex==-1){
+                    //If a group has not been found, then create a new group
+                    groups.push({"groupname":currnode.most_active_forum, 
+                                "nodes":{key:currnode},
+                               "links":[]});
+                    groupIndex = groups.length-1
+                }else{
+                    //If found, add the currnode to the group's nodes
+                    groups[groupIndex].nodes[key] = currnode;
+                }
+
+                //append the links that the user is part of i.e. if username==link.fromuser
+                /*var newlinks = _.filter(links, function(alink){
+                     return alink.fromuser == currnode.name;
+                });
+                console.log("new links for "+currnode.name, newlinks)
+                groups[groupIndex].links = groups[groupIndex].links.concat(newlinks)*/
+                
+            }
+        }
+        
+         
+        
+        console.log(groups)
+        /*nodes = groups[0].nodes
+        links = groups[0].links
+        */
+        //All loading is done, draw
+        draw( )
+        
+    });//end of 2nd data loading 
+
+});//end of 1st data loading 
+
+function draw(){
+    /*center = {"x":width/2, "y":height / 2 - 100}
+    radius = 300
+    increment = 18 
+    keys(nodes)*/
+
+    console.log(nodes, links)
     force
         .nodes(d3.values(nodes))
         .links(links)
         .start();
-    
+
     var link = svg.selectAll(".link")
     .data(force.links())
     .enter().append("line")
     .attr("class", "link");
-    
+
     var node = svg.selectAll(".node")
     .data(force.nodes())
     .enter().append("circle")
     .attr("class", "node")
     .attr("r", 5)
     .call(force.drag);
-    
+
     node.append("title")
         .text(function(d) { return d.name; });
 
 
-  force.on("tick", function() {
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+    force.on("tick", function(e) {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
 
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-  });
-});
+        node.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+    });
+}
+
+
+/*
+# The update() function performs the bulk of the
+# work to setup our visualization based on the
+# current layout/sort/filter.
+#
+# update() is called everytime a parameter changes
+# and the network needs to be reset.
+*/
+function update(){
+    //reset nodes in force layout
+    force.nodes(nodes)
+
+    //enter / exit for nodes
+    updateNodes()
+
+    //always show links in force layout
+    if( layout == "force"){
+        force.links(links)
+        updateLinks()
+    }else{
+        /*
+        # reset links so they do not interfere with
+        # other layouts. updateLinks() will be called when
+        # force is done animating.
+        */
+        force.links([])
+        //# if present, remove them from svg
+        if (link){
+            link.data([]).exit().remove()
+            link = null
+        }
+    }
+    //# start me up!
+    force.start()
+
+}
+
 
 </script>
+</body>
