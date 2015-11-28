@@ -68,3 +68,24 @@ This will also be the prefix for your auxiliary functions
 
 
 * **network_ ** for network overview
+
+## For Network Overview
+Run force_graph_csv/force_graph_group_csv.html
+
+This file reads data from: 
+1) force_graph_csv/quotes.csv
+2) usersGroupByMostActiveForum.csv
+
+## Local server
+Since bracket.io server doesn't automatically load the changes in the code, run the local server instead.
+1. Before running the server install nodejs: https://nodejs.org/en/download/ 
+2. Run the terminal and navigate to project folder.
+3. Run the following command:
+    node server.js
+4. Then, go to the browser and go to the url: http://localhost:4567 
+
+## Things TODO:
+1. Tweak the gravity, charge, and friction of the network overview: force_graph_csv/force_graph_group_csv.html
+Right now the graph is simply too tight to each other
+
+2. Create a transition from node click to user-centric view
