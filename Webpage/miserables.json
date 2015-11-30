@@ -1,6 +1,6 @@
 {
   "nodes":[
-    {"name":"Myriel"},
+    {"name":"Myriel", "r":20},
     {"name":"Napoleon"},
     {"name":"Mlle.Baptistine"},
     {"name":"Mme.Magloire"},
