@@ -1,60 +1,71 @@
-table_quote <- read.csv("csv/quote.csv",
-                        colClasses = rep("integer", 5),
-                        stringsAsFactors = FALSE);
-
-table_thank <- read.csv("csv/thank.csv",
-                        colClasses = rep("integer", 4),
-                        stringsAsFactors = FALSE);
-
-table_pm <- read.csv("csv/pm.csv",
-                        colClasses = rep("integer", 4),
-                        stringsAsFactors = FALSE);
-
-table_user <- read.csv("csv/user.csv",
-                       colClasses = c("character", "integer"),
-                       stringsAsFactors = FALSE);
-
-userids <- table_user$userid;
-match <- rep(FALSE, length(userids));
-
-
-markUsedID <- function(table, userids, match) {
-  match <- markUsedIDAux(table$fromuser, userids, match);
-  match <- markUsedIDAux(table$touser, userids, match);
+generateIDs <- function() {
+  table_user <- read.csv("csv/user.csv",
+                         colClasses = c("character", "integer"),
+                         stringsAsFactors = FALSE);
+  return (table_user$userid);
 }
 
-markUsedIDAux <- function(ids, userids, match) {
-  size <- length(ids);
-  for (row in 1:size) {
-    if (which(userids == ids[row]) > 0)
-    match[which(userids == ids[row])] = TRUE;
+deleteUnusedIDs <- function(IDs, connections) {
+  markUsedID <- function(IDs, connections, match) {
+    match <- markUsedIDAux(connections$fromuser, IDs, match);
+    match <- markUsedIDAux(connections$touser, IDs, match);
   }
-  return (match);
+  markUsedIDAux <- function(ids, IDs, match) {
+    size <- length(ids);
+    for (row in 1:size) {
+      if (which(IDs == ids[row]) > 0)
+        match[which(IDs == ids[row])] = TRUE;
+    }
+    return (match);
+  }
+  
+  
+  match <- rep(FALSE, length(IDs));
+  match <- markUsedID(IDs, connections, match);
+  return (IDs[match]);
 }
 
-match <- markUsedID(table_quote, userids, match);
-match <- markUsedID(table_pm, userids, match);
-match <- markUsedID(table_thank, userids, match);
+deleteIDs <- function(IDs, toDelete) {
+  for (item in 1:length(toDelete)) {
+    IDs <- IDs[IDs != toDelete[item]]
+  }
+  return (IDs);
+}
 
-nodes <- userids[match];
-nodes <- nodes[order(nodes)]
+generateConnections <- function() {
+  table_quote <- read.csv("csv/quote.csv",
+                          colClasses = rep("integer", 5),
+                          stringsAsFactors = FALSE);
+  
+  table_thank <- read.csv("csv/thank.csv",
+                          colClasses = rep("integer", 4),
+                          stringsAsFactors = FALSE);
+  
+  table_pm <- read.csv("csv/pm.csv",
+                       colClasses = rep("integer", 4),
+                       stringsAsFactors = FALSE);
+  connections_quote <- table_quote[, c("fromuser", "touser")];
+  connections_quote$group <- rep("quote", nrow(connections_quote));
+  connections_pm <- table_pm[, c("fromuser", "touser")];
+  connections_pm$group <- rep("pm", nrow(connections_pm));
+  connections_thank <- table_thank[, c("fromuser", "touser")];
+  connections_thank$group <- rep("pm", nrow(connections_thank));
+  connections <- rbind(connections_quote, connections_pm, connections_thank);
+  return (connections);
+}
 
-###########################
-## Below generates links ##
-
-connections_quote <- table_quote[, c("fromuser", "touser")];
-connections_quote$group <- rep("quote", nrow(connections_quote));
-connections_pm <- table_pm[, c("fromuser", "touser")];
-connections_pm$group <- rep("pm", nrow(connections_pm));
-connections_thank <- table_thank[, c("fromuser", "touser")];
-connections_thank$group <- rep("pm", nrow(connections_thank));
-
-connections <- rbind(connections_quote, connections_pm, connections_thank);
+deleteConnections <- function(connections, toDelete) {
+  for (item in 1:length(toDelete)) {
+    connections <- connections[connections$fromuser != toDelete[item], ];
+    connections <- connections[connections$touser != toDelete[item], ];
+  }
+  return (connections);
+}
 
 # Make fromuser always less than touser
 # and elliminate self link
-getOneWayLink <- function(connections) {
-  tmp <- integer(length(fromusers));
+convertToOneWayConnection <- function(connections) {
+  tmp <- integer(length(connections$fromusers));
   index <- connections$fromuser > connections$touser;
   tmp[index] <- connections$fromuser[index];
   connections$fromuser[index] <- connections$touser[index];
@@ -62,10 +73,9 @@ getOneWayLink <- function(connections) {
   return (connections);
 }
 
-generateLinks <- function(nodes, connections, counts) {
-  connections <- getOneWayLink(connections);
+generateLinks <- function(IDs, connections) {
   connections <- connections[with(connections, order(fromuser, touser)), ];
-  
+  counts <- rep(0, nrow(connections));
   fromusers <- connections$fromuser;
   tousers <- connections$touser;
   size <- nrow(connections);
@@ -78,23 +88,68 @@ generateLinks <- function(nodes, connections, counts) {
       row <- row + 1;
       counts[curRow] <- counts[curRow] + 1;
     }
-    fromusers[curRow] <- which(nodes == curFromuser)-1;
-    tousers[curRow] <- which(nodes == curTouser)-1;
+    # Careful: index in d3 starts from 0
+    fromusers[curRow] <- which(IDs == curFromuser)-1;
+    tousers[curRow] <- which(IDs == curTouser)-1;
   }
   links <- data.frame(source = fromusers, target = tousers, 
                       value = counts, group = connections$group);
   return (links[links$value>0, ]);
 }
 
+scale <- function(data, kept_amount, range_min, range_max) {
+  qt <- 1 - kept_amount/length(data);
+  min <- quantile(data, qt);
+  max <- max(data);
+  r <- numeric(length(data));
+  r[data < min] <- 0;
+  r[data > min] <- round((data[data > min] - min) / (max - min) * 
+    (range_max - range_min) + range_min, 2);
+  return (r);
+}
 
-counts <- rep(0, nrow(connections));
-links <- generateLinks(nodes, connections, counts);
+generateStrengthByConnection <- function(IDs, links) {
+  strength <- integer(length(IDs));
+  # Careful: start index differ
+  sources <- links$source + 1;
+  targets <- links$target + 1;
+  
+  values <- links$value;
+  size <- nrow(links);
+  for (row in 1:size) {
+    strength[sources[row]] <- strength[sources[row]] + values[row];
+    strength[targets[row]] <- strength[targets[row]] + values[row];
+  }
+  return (strength);
+}
 
 
-# Elliminating abnormal data
+#### Main ####
 
+IDs <- generateIDs();
+connections <- generateConnections();
+# Delete those IDs that never appear in connection
+IDs <- deleteUnusedIDs(IDs, connections);
 
-write.table(nodes, file="csv/network_nodes.csv", row.names=FALSE, col.names=c("name"));
+# Elliminate abnormal data
+toDelete = c(18936, 18957, 18950, # only connections among themselves
+             14116);  # system messages
+IDs <- deleteIDs(IDs, toDelete);
+connections <- deleteConnections(connections, toDelete);
+
+# Treat A->B and B->A the same
+connections <- convertToOneWayConnection(connections);
+# Order ID so the generated links will be ordered (unnecessary)
+IDs <- IDs[order(IDs)];
+links <- generateLinks(IDs, connections);
+
+# get the determintent of radius
+strength <- generateStrengthByConnection(IDs, links);
+# generates radius
+r <- scale(strength, 100, 5, 20);
+
+nodes <- data.frame(name = IDs, r = r);
+
+write.csv(nodes, file="csv/network_nodes.csv", row.names=FALSE);
 write.csv(links, file="csv/network_links.csv", row.names=FALSE);
-
 
