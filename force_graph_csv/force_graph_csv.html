@@ -99,11 +99,16 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+<<<<<<< Updated upstream
 var cp;
 var nodes = {};
 var links; 
   
 d3.csv("quotes.csv", function(error, inlinks) {
+=======
+
+d3.csv("quote.csv", function(error, links) {
+>>>>>>> Stashed changes
     if (error) throw error;
     links = inlinks;
     links.forEach(function(link) {

@@ -55,7 +55,7 @@ ON t3.receiverid = t4.userid;
 
 
 # this query give us connection in thanks
-SELECT t1.dateline AS date, t1.userid, t2.userid AS receiverid, t2.postid
+SELECT t1.userid AS fromuser, t2.userid AS touser, t1.dateline AS date, t2.postid
 From
 		(SELECT * FROM carderscc_01.thanks) AS t1
 	inner join
@@ -78,22 +78,16 @@ SELECT count(*) FROM carderscc_01.pmtext
 where touserarray REGEXP 'i\\:{1}';
 
 
-# this query give us connection in pm
-# notice that touserid = 0 does not have a name specified in touserarray so we couldn't fix
-SELECT date, fromuserid, touserid, title, message
-FROM	
-    (SELECT fromuserid, 
-		# touserarray is like 'a:1:{i:6153;s:5:"ZEL0S";}' 
-        # where 6153 is touserid
-		@beginIndex := INSTR(touserarray,'i:')+2,
-		@length := INSTR(SUBSTRING(touserarray, @beginIndex),';')-1,
-		CONVERT(SUBSTRING(touserarray, @beginIndex, @length), UNSIGNED INTEGER)
-			AS touserid,
-		dateline AS date,
-        title,
-        message
-	FROM carderscc_01.pmtext) AS t1
-WHERE fromuserid > 1 AND touserid > 0 # exclude system messages
-ORDER BY date ASC;
+# these two queries does not return NULL value on userid
+# which shows that all ids in thanks table has a correspponding id in user tables
+SELECT t1.userid FROM
+		(SELECT userid FROM carderscc_01.thanks WHERE receiverid != 0) AS t1
+	LEFT JOIN
+		(SELECT userid FROM carderscc_01.user) AS t2
+	ON t1.userid = t2.userid;
 
-
+SELECT t1.receiverid FROM
+		(SELECT receiverid FROM carderscc_01.thanks WHERE receiverid != 0) AS t1
+	LEFT JOIN
+		(SELECT userid FROM carderscc_01.user) AS t2
+	ON t1.receiverid = t2.userid;

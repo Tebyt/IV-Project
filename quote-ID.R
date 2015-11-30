@@ -1,5 +1,5 @@
-table_post <- read.csv("csv/post.csv",
-                       colClasses = c(rep("character", 2), rep("integer", 4)),
+table_post <- read.csv("csv/post-id.csv",
+                       colClasses = c("integer", "character", rep("integer", 4)),
                        stringsAsFactors = FALSE,
                        na.strings = "NULL");
 
@@ -45,19 +45,6 @@ extractQuotes <- function(pagetext, startTag, endTag) {
   }
 }
 
-getUsernameByID <- function(quote) {
-  userName <- sub(".*\\[QUOTE\\=(.+)\\;\\d+\\].*", "\\1", quote, ignore.case = TRUE);
-  if (userName != quote) {
-    return (userName);
-  }
-  userName <- sub(".*\\[quote author\\=(.+) link\\=topic\\=\\d+\\.(msg\\d+)\\#\\2 date\\=\\d+\\].*"
-                  , "\\1", quote, ignore.case = TRUE);
-  if (userName != quote) {
-    return (userName);
-  }
-  return ("");
-}
-
 findMatchedRow <- function(quote, pagetexts, startRow, endRow) {
   if (quote == "") {
     return (-1);
@@ -76,16 +63,16 @@ buildQuote <- function(post, startTag, endTag) {
   startTime <- proc.time()[3];
   
   newRows <- integer();
-  newTousers <- character();
+  newTousers <- integer();
   
   endRow <- 1;
   size <- nrow(post);
-  tousers <- character(nrow(post));
+  tousers <- integer(nrow(post));
   pagetexts <- post$pagetext;
   threadids <- post$threadid;
-  fromusers <- post$username;
+  fromusers <- post$fromuser;
   importpostids <- post$importpostid;
-  dates <- post$dateline;
+  dates <- post$date;
   postids <- post$postid;
   for (row in 2:size) {
     if (threadids[row] != threadids[row-1]) {
@@ -100,23 +87,20 @@ buildQuote <- function(post, startTag, endTag) {
     first <- TRUE;
     result <- "";
     for (quote in quotes) {
-      username <- getUsernameByID(quote);
-      if (username == "") {
-        quote <- sub(paste0(startTag, "(.*)", endTag), "\\1", quote, ignore.case <- TRUE);
-        threadid <- threadids[row];
-        matched_row <- findMatchedRow(quote, pagetexts, row-1, endRow);
-        if (matched_row > 0) {
-          username <- fromusers[matched_row];
-        } else {
-          next;
-        }
+      quote <- sub(paste0(startTag, "(.*)", endTag), "\\1", quote, ignore.case <- TRUE);
+      threadid <- threadids[row];
+      matched_row <- findMatchedRow(quote, pagetexts, row-1, endRow);
+      if (matched_row > 0) {
+        userID <- fromusers[matched_row];
+      } else {
+        next;
       }
       if (first) {
-        tousers[row] <- username;
+        tousers[row] <- userID;
         first = FALSE;
       } else {
         newRows = append(newRows, row);
-        newTousers = append(newTousers, username);
+        newTousers = append(newTousers, userID);
       }
     }
     if (row / size > progress) {
@@ -135,16 +119,15 @@ buildQuote <- function(post, startTag, endTag) {
   
   newData = getNewRows(newRows, newTousers, fromusers, dates, postids, threadids);
   post$touser = tousers;
-  post = post[tousers != "",];
-  post = post[, c("username", "touser", "dateline", "postid", "threadid")];
-  colnames(post) <- c("fromuser", "touser", "date", "postid", "threadid");
+  post = post[tousers != 0,];
+  post = post[, c("fromuser", "touser", "date", "postid", "threadid")];
   post = rbind(post, newData);
   return (post);
 }
 
 getNewRows <- function(newRows, newTousers, fromusers, dates, postids, threadids) {
   size = length(newRows);
-  newFromusers = character(size);
+  newFromusers = integer(size);
   newDates = integer(size);
   newPostids = integer(size);
   newThreadids = integer(size);
@@ -158,7 +141,8 @@ getNewRows <- function(newRows, newTousers, fromusers, dates, postids, threadids
   return (data.frame(fromuser=newFromusers, touser=newTousers, date=newDates, postid=newPostids, threadid=newThreadids));
 }
 
-table_quote = buildQuote(table_post, startTag, endTag);
+table_quote <- buildQuote(table_post, startTag, endTag);
+table_quote <- table_quote[table_quote$fromuser != table_quote$touser, ];
 
 write.csv(table_quote, file="csv/quote.csv", row.names=FALSE);
 
