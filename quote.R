@@ -58,7 +58,7 @@ getUsernameByID <- function(quote) {
   return ("");
 }
 
-findMatch <- function(quote, pagetexts, startRow, endRow) {
+findMatchedRow <- function(quote, pagetexts, startRow, endRow) {
   if (quote == "") {
     return (-1);
   }
@@ -104,7 +104,7 @@ buildQuote <- function(post, startTag, endTag) {
       if (username == "") {
         quote <- sub(paste0(startTag, "(.*)", endTag), "\\1", quote, ignore.case <- TRUE);
         threadid <- threadids[row];
-        matched_row <- findMatch(quote, pagetexts, row-1, endRow);
+        matched_row <- findMatchedRow(quote, pagetexts, row-1, endRow);
         if (matched_row > 0) {
           username <- fromusers[matched_row];
         } else {
@@ -161,6 +161,7 @@ getNewRows <- function(newRows, newTousers, fromusers, dates, postids, threadids
 table_quote = buildQuote(table_post, startTag, endTag);
 
 write.csv(table_quote, file="csv/quote.csv", row.names=FALSE);
+
 
 # write(toJSON(unname(split(table_quote, 1:nrow(table_quote)))), "json/quote.json");
 
