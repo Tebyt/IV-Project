@@ -35,6 +35,15 @@ line.link {
   width: 900px;
   border:2px solid #000;
   overflow: scroll;
+  float:left;
+ }
+ .legend{
+  font-size: 12 px;
+ }
+.informationbox{
+  font-size: 12 px;
+  top:0px;
+  right:0px;
  }
     </style>
   </head>
@@ -61,6 +70,19 @@ var tooltip = d3.select("body")
     .style("z-index", "10")
     .style("visibility", "hidden")
     .text("a simple tooltip");
+
+var legendRectSize = 18;
+var legendSpacing = 4;
+
+var informationbox = d3.select("body")
+    .append("div")
+    .attr("class", "informationbox") 
+    .text("Information Box")
+    .style("float", "right");
+
+var legend = informationbox.append("svg")
+    .attr("class", "legend"); 
+  
 
 var forumdata;
 function noop() { return false; }
@@ -360,10 +382,33 @@ function init() {
       });
       if(groupInd!=-1){
         forumname = forumdata[groupInd].most_active_forum
+        legend.append("text")
+          .text("Forum"+ forumname)
+
+        legend.data(forumdata[groupInd])
+          .enter()
+          .append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i){
+            var height = legendRectSize + legendSpacing;
+            var offset = 10//height * color.domain().length/2;
+            var horz = -2 * legendRectSize;
+            var vert = i * height - offset;
+            console.log(horz, vert)
+            return "translate(" + horz + ","+vert+")";
+
+          })
+          .text(function(d){
+            return " "+d.username
+          })
       }
     } 
 
     tooltip.text("Forum: "+forumname);
+    //Show forum data like forum name, and nodes and number of posts for each node in that forum
+    
+    
+
     return tooltip.style("visibility", "visible");
   })
   .on("mousemove", function(){
@@ -393,6 +438,8 @@ function init() {
 
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
+
+
   });
 }
 

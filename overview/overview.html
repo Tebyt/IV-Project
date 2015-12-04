@@ -1,0 +1,196 @@
+<!DOCTYPE html >
+<html>
+<head>
+	<!--<script src="d3.min.js" type="text/javascript" charset="utf-8"></script>-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+	<style type="text/css">
+		header {
+		    background-color: navy;
+		    color:white;
+		    font-family: "Arial";
+		}
+
+		h1 {
+		    color: white;
+		    margin-left: 20px;
+		    font-family: "Arial";
+
+
+		}
+		body{
+		    font-family: "Arial";
+
+		}
+		#search{
+			background-color: navy;
+		    color:white;
+		    font-family: "Arial";
+
+		}
+		#amount{
+			font-weight: bold;
+		}
+        .domain{
+            fill:none;
+            stroke:#000;
+        }
+        g {
+            font-size: 8px;
+
+        }
+	</style>
+
+	<title>Lab 3</title>
+	<header><h1>Country GDP vs Easy of business</h1></header>
+
+</head>
+
+<body>
+
+	<script type="text/javascript">
+        var data;
+        
+        function build(){
+            d3.select("body").select("#svgdiv").append("svg")
+                .attr("width", 600)
+                .attr("height", 400)
+                .attr("transform", "translate(" + 100 + "," + 10 + ")");
+
+        }
+		function search_button_click(){
+			var search_text = d3.select("#search_text").node().value;
+			var GDP = 0;
+
+			//Search through countries array
+			for(var i=0; i<data.length; i++){
+				if(data[i].name == search_text){
+					GDP = data[i].GDP;
+					//Set interface GDP
+					d3.select("#amount").text("$"+GDP);
+					break;
+				}
+			}
+
+			console.log("search text: "+ search_text + " corresponding GDP:"+ GDP);
+		}
+        
+        d3.csv("data.csv", function(result){
+            dataloaded(result);
+        });//need server to call this
+        
+        function dataloaded(result){
+            data = result.map(function(d){
+                return {
+                    name: d.Country,
+                    GDP: +d['GDP per Capita'].replace("$", "").replace(",", ""),
+                    Year: new Date(d.Year).getYear() + 1900,
+                    Easy: +d['Ease of Business']
+                }
+            })
+            data = data.filter(function(d) {
+                return d.Year == 2012;
+            })
+            
+            data.sort(function(a,b){
+                return d3.ascending(a.name, b.name);
+            });
+            console.log(data);
+            update(data);
+        }
+        
+        function getNewData() {
+            var data = JSON.parse(d3.select("#search_text").node().value);
+            return data;
+        }
+        
+        function update(data) {
+             
+            var selection = d3.select("#list")
+                .selectAll("li")
+                .data(data, function(d) { return d.name; });
+            
+            //enter
+            selection.enter().append("li")
+            .text(function(d) { return d.name + ": " + d.GDP })
+            .on("click", function(d, i){
+                console.log(this, d);
+                alert('clicked: '+d.name);
+            });
+            
+            //exit
+            selection.exit().remove();
+            
+            //Update
+            selection.text(function(d) { return d.name + ": " + d.GDP });
+            
+            console.log(data);
+                
+            build();
+            
+            var scaleXRangeBegin = 25, 
+                scaleXRangeEnd = 580;
+            var scaleYRangeBegin = 20, 
+                scaleYRangeEnd = 380;
+            
+            var scaleX = d3.scale.linear();
+            scaleX.range([scaleXRangeBegin, scaleXRangeEnd]);
+            scaleX.domain([0, 
+                           d3.max(data, function(d){return d.GDP})]);
+            
+            var scaleY = d3.scale.linear();
+            scaleY.range([scaleYRangeBegin, scaleYRangeEnd]);
+            scaleY.domain([d3.max(data, function(d){return d["Easy"]}),
+                           0]);
+            
+            //Axis
+            var xAxis = d3.svg.axis()
+                .scale(scaleX)
+                .orient("bottom")
+            
+            var yAxis = d3.svg.axis()
+                .scale(scaleY)
+                .orient("left")
+            
+            d3.select("svg")
+                .append("g")
+                .attr("transform", "translate(0, "+scaleYRangeEnd+")")
+                .call(xAxis);
+            
+            d3.select("svg")
+                .append("g")
+                .attr("transform", "translate("+scaleXRangeBegin+", 0)")
+                .call(yAxis);
+            
+            var selection = d3.select("svg")
+                .selectAll("circle")
+                .data(data, function(d) { return d.name; });
+            
+            //enter
+            selection.enter().append("circle")
+                .attr({cx:function(d,i){console.log(d); return scaleX( d.GDP)}, 
+                        cy:function(d,i){console.log(d); return scaleY( d.Easy)}, 
+                        r:5})
+                .append("title")
+                //.text(function(d){return d.name;});
+            
+        }
+        
+	</script>
+
+ 		Search: <input type="text" id="search_text"> <input type="button" id="search" onclick="search_button_click()" value="Go" > <span class="GDP">GDP:</span><span id="amount">$11,000</span>
+    
+    <table>
+        <tr>
+            <td height="500" style="border: 1px solid black;">
+                <div style="overflow:scroll; height:100%;overflow-y: auto;">
+                    <ul id="list"></ul>
+                </div>
+            </td>
+            <td><div id="svgdiv"></div></td>
+        </tr>
+    </table>
+    
+    
+    
+ </body>
+</html>
