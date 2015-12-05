@@ -3,7 +3,11 @@
 <head>
     <!--<script src="d3.min.js" type="text/javascript" charset="utf-8"></script>-->
     <script src="d3.min.js" charset="utf-8"></script>
-    <link rel="stylesheet" src="bootstrap.min.css" >
+
+    <link rel="stylesheet" src="css/bootstrap.min.css" >
+    <script src="jquery.min.js" charset="utf-8"></script>
+    <script src="js/bootstrap.min.js" charset="utf-8"></script>
+
     <style type="text/css">
         header {
             background-color: navy;
@@ -378,49 +382,42 @@
         }
       
     </script>
+    <div class="container">
         <header><h1>Forum Name</h1></header>
-        <div class="form-group">
-            <div class="row">
+        <div class="row">
 
-               <!--<label for="forumdropdown" class="col-md-4">Forums:</label>
-               <div  class="col-md-8">
-                    <select id="forumdropdown" >
-                    </select>
-               </div> -->
-               <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Forums:
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                    </ul>
-                </div>
+           <label for="forumdropdown" class="col-md-4">Forums:</label>
+           <div  class="col-md-8">
+                <select id="forumdropdown" >
+                </select>
+           </div> 
+        </div>
+
+        <div class="row">
+            <div class="pull-right">
+                Search: 
+                <input type="text" id="search_text"> 
+                <input type="button" id="search" onclick="search_button_click()" value="Go" > 
+                <span class="GDP">GDP:</span><span id="amount">$11,000</span>
             </div>
         </div>
-        Search: <input type="text" id="search_text"> <input type="button" id="search" onclick="search_button_click()" value="Go" > <span class="GDP">GDP:</span><span id="amount">$11,000</span>
-    
-    <table>
-        <tr>
-            <td height="500" style="border: 1px solid black;">
-                <div style="overflow:scroll; height:100%;overflow-y: auto;">
-                    <ul id="list"></ul>
-                </div>
-            </td>
-            <td>
-                <div id="info"></div>
-                <div id="tooltip">
-                    <span id="countryName">US</span>
-                    <span id="countryGDP">5654</span>
-                    <span id="countryEasy">154</span>
-                </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                TODO: List of Users Here
+                <ul id="list">
+
+                </ul>
+
+                
+            </div>
+            <div class="col-md-8">
+                TODO:List of Forums
                 <div id="svgdiv"></div>
-            </td>
-        </tr>
-    </table>
+            </div>
+    </div>
     
-    
+    </div>
     
  </body>
 </html>
