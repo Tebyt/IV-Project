@@ -4,7 +4,7 @@ import json
 {
 	forum:[
 		{
-			users:		[ {lv:_, 			posts:[{postid, date, threadid}, ...]} ],
+			users:		[ {lv:_, 	posts:[{postid, date, threadid}, ...]} ],
 			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:_ ,
 			forumtitle:_,
@@ -15,7 +15,7 @@ import json
 	]
 }
 '''
-isLimit = False
+isLimit = True
 
 #information i.e. {userid}
 def addUserToForum(user_info, row):
@@ -42,9 +42,9 @@ def addUserToForum(user_info, row):
 
 
 def addPostToThread(post_info, row):
-	threadid = row[5]
-	threadtitle = row[4]
-	forumid = row[3]
+	threadid = row[6]
+	threadtitle = row[5]
+	forumid = row[4]
 
 	#Add post_info the the right thread in thread_list
 	isPostAdded = False
@@ -85,24 +85,25 @@ for row in reader:
 	if rownum == 0:
 		header = row
 	else:
-		#row = userid,username,forumtitle,forumid,threadtitle,threadid,userid,postid,posttitle,dateposted,posttext
-		forumid = row[3]
-		forumtitle = row[2]
+		#row = userid,username,reputationlevelid, forumtitle,forumid,threadtitle,threadid,userid,postid,posttitle,dateposted,posttext
+		forumid = row[4]
+		forumtitle = row[3]
 
 		#Add the userid, username to the right forum
 		userid = row[0]
 		username = row[1]
+		lv = row[2]
 		#{lv:_, posts:[{postid, date, threadid}, ...]}
-		user_info = {"userid":userid, "username":username}#, "posts":[]}
+		user_info = {"userid":userid, "username":username, "lv":lv}#, "posts":[]}
 		addUserToForum(user_info, row)
 
 		#group posts by threads
-		postid = row[7]
-		posttitle = row[8]
-		dateposted = row[9]
-		posttext = row[10]
+		postid = row[8]
+		posttitle = row[9]
+		dateposted = row[10]
+		posttext = row[11]
 		#{postid, posttitle, date, userid}
-		post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid} 
+		post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid, "posttext":posttext} 
 		addPostToThread(post_info, row)
 
 		#Add the post information to the users
