@@ -15,6 +15,7 @@ This is our reference for the interface.
 * **postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
 * **threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
 * **forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
+* **postInfo.csv** post information
 
 
 ## Data Format
