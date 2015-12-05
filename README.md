@@ -7,15 +7,17 @@ This is our reference for the interface.
 * **data.sql** generates csv files
 * **quote.R** extract quote connections from post.csv
 * **transform.py** Transforms the csv files into json files for the dual view
+* **/sql_preprocessing** SQL code to extract the csv files in /csv
+
 
 ### Data
 * **post.csv** post information
 * **quote.csv** quote connection
 * **user.csv** user information including user reputation level and total posts
-* **timeduration.csv** the start and end date of the whole data set i.e. first post and end post. Dates are in the same format as from_unixtime()
-* **postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
-* **threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
-* **forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
+* **timeduration.sql-->timeduration.csv** the start and end date of the whole data set i.e. first post and end post. Dates are in the same format as from_unixtime()
+* **postTimeSeries.sql-->postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
+* **threadInfo.sql-->threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
+* **forumInfo.sql-->forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
  
 
 ## Data Format

@@ -15,6 +15,30 @@ import json
 	]
 }
 '''
+
+#information i.e. {userid}
+def addToForum(user_info, row):
+	#Search for the forum in forum_list
+	isAdded = False
+	for index, item in enumerate(forum_list):
+		if item["forumid"] == forumid:
+
+			#Check to make sure that the user_info added in the forum_list[index] 
+			userAdded = False
+			for j, userinforum in enumerate(forum_list[index]["user"]):
+				if userinforum["userid"] == userid:
+					userAdded = True
+					break
+			if not userAdded:
+				forum_list[index]["user"].append(user_info)
+
+			isAdded = True
+			break
+
+	if not isAdded:
+		print "Not added to any forum:"+user_info
+
+		
 forum_list = []
 with open('csv/forumInfo.csv', 'rb') as f:
 	reader = csv.reader(f)
@@ -49,25 +73,8 @@ for row in reader:
 		#{lv:_, posts:[{postid, date, threadid}, ...]}
 		user_info = {"userid":userid, "username":username, "posts":[]}
 		
-		#Search for the forum in forum_list
-		isAdded = False
-		for index, item in enumerate(forum_list):
-			if item["forumid"] == forumid:
-
-				#Check to make sure that the user_info added in the forum_list[index] 
-				userAdded = False
-				for j, userinforum in enumerate(forum_list[index]["user"]):
-					if userinforum["userid"] == userid:
-						userAdded = True
-						break
-				if not userAdded:
-					forum_list[index]["user"].append(user_info)
-
-				isAdded = True
-				break
-
-		if not isAdded:
-			print "Not added to any forum:"+user_info
+		addToForum(user_info, row)
+		
 
 
 	rownum += 1
@@ -77,5 +84,4 @@ ifile.close()
 with open("csv/dual_data.json", "w") as outfile:
 	json.dump({"data":forum_list}, outfile)
 
-#information i.e. {userid}
-#def addToForum(information):
+
