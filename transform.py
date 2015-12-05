@@ -15,10 +15,10 @@ import json
 	]
 }
 '''
-
+isLimit = True
 
 #information i.e. {userid}
-def addToForum(user_info, row):
+def addUserToForum(user_info, row):
 	#Search for the forum in forum_list
 	isAdded = False
 	for index, item in enumerate(forum_list):
@@ -40,6 +40,25 @@ def addToForum(user_info, row):
 		print "Not added to any forum:"+user_info
 
 
+
+def addPostToThread(post_info, row):
+	threadid = row[5]
+	threadtitle = row[4]
+	forumid = row[3]
+
+	#Add post_info the the right thread in thread_list
+	isPostAdded = False
+	for index, threaditem in enumerate(thread_list):
+		if threaditem["threadid"] == threadid:
+			thread_list[index]["posts"].append(post_info)
+			isPostAdded = True
+			break
+	#thread_info = [ {threadid, title:_, posts:[post_info, ...]} ]
+	if not isPostAdded:
+		thread_list.append({"threadid":threadid, "title":threadtitle, "posts":[post_info], "forumid":forumid})
+		
+
+
 forum_list = []
 with open('csv/forumInfo.csv', 'rb') as f:
 	reader = csv.reader(f)
@@ -48,7 +67,7 @@ with open('csv/forumInfo.csv', 'rb') as f:
 
 	for row in reader:
 		if rownum>0:
-			forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "user":[], "thread":[] }
+			forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "user":[], "threads":[] }
 			#print forum_info
 			forum_list.append(forum_info)
 		rownum = rownum + 1
@@ -75,31 +94,20 @@ for row in reader:
 		username = row[1]
 		#{lv:_, posts:[{postid, date, threadid}, ...]}
 		user_info = {"userid":userid, "username":username, "posts":[]}
-		addToForum(user_info, row)
+		addUserToForum(user_info, row)
 
 		#group posts by threads
-		threadid = row[5]
-		threadtitle = row[4]
 		postid = row[7]
 		posttitle = row[8]
 		dateposted = row[9]
 		posttext = row[10]
 		#{postid, posttitle, date, userid}
 		post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid} 
+		addPostToThread(post_info, row)
 
-
-		#Add post_info the the right thread in thread_list
-		isPostAdded = False
-		for index, threaditem in enumerate(thread_list):
-			if threaditem["threadid"] == threadid:
-				thread_list[index]["posts"].append(post_info)
-				isPostAdded = True
-				break
-		#thread_info = [ {threadid, title:_, posts:[post_info, ...]} ]
-		if not isPostAdded:
-			thread_list.append({"threadid":threadid, "title":threadtitle, "posts":[post_info], "forumid":forumid})
 		
-
+	if isLimit and rownum>10000:
+		break
 	rownum += 1
 
 ifile.close()
