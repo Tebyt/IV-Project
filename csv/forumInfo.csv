@@ -1,102 +1,99 @@
 forumid,forumtitle,numberofthreads,numberofposts,activeusers
-168,"Forum Rules",2,18,12
-169,"About Forum - News",37,1589,1095
-170,"All about Fraud",30,368,153
-171,"Virtual Carding",55,649,256
-172,"Real Carding",10,121,64
-173,"Identification &amp;amp; Documents",29,337,123
-174,Paymentsystems,33,365,121
-175,"Sell CC + CVV",7,532,302
-176,"Cashout and Drop Service",4,188,64
-177,"Dumps only",2,22,16
-178,"Plastic &amp; Documents",4,157,108
+168,"Forum Rules",1,11,9
+169,"About Forum - News",29,1529,1062
+170,"All about Fraud",12,229,80
+171,"Virtual Carding",21,399,134
+172,"Real Carding",5,81,44
+173,"Identification &amp;amp; Documents",13,214,67
+174,Paymentsystems,12,195,51
+175,"Sell CC + CVV",6,524,299
+176,"Cashout and Drop Service",3,182,50
+177,"Dumps only",1,12,8
+178,"Plastic &amp; Documents",3,148,101
 179,"Anonymity Services",4,463,263
-181,"Zahlungsmethoden und Cashout",675,9373,5259
-182,"Die Fragen der Neulinge",831,10186,5196
-183,Diskussionen,731,12293,6403
-188,Vorstellungen,90,928,497
-189,Tutorials,537,11921,6139
-193,"Social Engeneering",92,2454,1333
-194,"Skimming und Vorschaltgeräte",30,511,246
+181,"Zahlungsmethoden und Cashout",356,6906,3632
+182,"Die Fragen der Neulinge",365,6600,3137
+183,Diskussionen,430,9957,4946
+188,Vorstellungen,31,484,219
+189,Tutorials,364,10578,5331
+193,"Social Engeneering",73,2310,1241
+194,"Skimming und Vorschaltgeräte",19,418,186
 195,Malware,2,32,22
-196,"Nachrichten Germany",326,9093,5548
-203,"Virtual creditcard (Cvv)",169,1921,719
-204,"English Main",52,724,349
-205,"Old dumpbase",48,514,168
-206,"Online banking logins",16,342,101
-207,Dumps,11,133,68
-208,"Real carding talk",18,181,48
-209,Carding/Instorecarding,697,10581,5571
-211,"Goods / Drugs / Self Defense",911,13649,5685
-212,"Services / Setup",511,8368,3497
-214,"Drops / Packstation",252,2848,1281
-215,"Tools / Malware",100,1862,748
-216,Searching,2001,19511,8375
-217,Droping/Packstation/Pickpoints...,464,7517,4303
-218,"Hochwertige Accounts",223,2918,1524
-219,"VPN/ Proxies",146,1930,824
-220,"Gaming Accounts",159,1756,1052
-221,"Warez Accounts",226,2219,1099
-222,"Sonstige Accounts",247,2818,1549
-223,Identitäten/Docs/IDs/,166,2480,1399
-224,"Payment Accounts + CC's",382,3645,2057
-225,"Payment Accounts",11,248,129
-226,"Support / Kritik / Verbesserungsvorschläge",351,5231,3030
-231,Botnet,169,2614,1349
-232,"Pay TV / Onlineradio",51,1227,569
-233,Exploits,40,567,287
-234,Injections,84,914,480
-235,Archiv,30,706,316
-236,"Hash Verschlüselungen / Passwort Cracking",77,889,484
-237,"Phreaking / Lockpicking",83,1862,983
-238,Trojaner,377,5491,2767
-239,Funktechnik,81,1569,836
-240,Webhosting,122,1616,880
-241,"Real Carding",45,689,458
-242,"EC&amp;amp;CC Dumps",13,191,104
-244,"Karten reader/writer",3,35,22
-245,"GFX and Video",234,3253,1709
-246,"Software &amp;amp; OS",221,2747,1525
-247,"Hardware and Tuning",109,1907,933
-249,Offtopic,2330,38475,22714
-251,Sonstiges,479,7131,3580
-252,Crypter/Packer/Binder,51,704,389
-256,"Technik Allgemein",52,734,477
-257,"Rechtliches / Legal",285,6765,3601
-258,Lifestyle,287,7327,4936
-262,Fightclub,12,463,255
-265,"Tools / Software",128,1934,1003
-266,Media,51,729,418
-267,Unsorted,128,2209,1192
-270,"CC's / Identification / Dumps",335,3783,1786
-273,"Not Sorted",471,6363,2684
-274,"Accounts / VPN, Socks",671,7070,2980
-277,Board-Polizei,48,1025,541
-278,Ripper-Reports,61,1235,642
-279,User-Beschwerden,118,1652,847
-280,Solved,315,5544,2376
-287,C/C++,21,217,135
-288,"Visual Basic",20,191,123
-289,"Python, Java, Perl",4,27,18
-290,"ASP, PHP, MySQL, MSSQL, HTML, CSS",41,400,200
-291,"Shell, Batch, Scripting",3,31,18
-292,"Programmierung Allgemein",24,321,208
-293,"VIP Main",14,157,86
-294,"Tutorials / Free Stuff",6,66,27
-295,"VIP Market",2,13,7
-296,".NET (VB.NET, C#, ASP.NET, C++.NET)",20,246,149
-304,Teamarea,27,251,151
+196,"Nachrichten Germany",253,8526,5108
+203,"Virtual creditcard (Cvv)",70,1179,420
+204,"English Main",24,504,236
+205,"Old dumpbase",11,252,58
+206,"Online banking logins",10,298,81
+207,Dumps,4,75,34
+208,"Real carding talk",7,100,26
+209,Carding/Instorecarding,413,8404,4200
+211,"Goods / Drugs / Self Defense",529,10684,4157
+212,"Services / Setup",277,6521,2529
+214,"Drops / Packstation",92,1641,674
+215,"Tools / Malware",63,1565,583
+216,Searching,574,8888,3306
+217,Droping/Packstation/Pickpoints...,283,6097,3357
+218,"Hochwertige Accounts",80,1846,903
+219,"VPN/ Proxies",57,1268,444
+220,"Gaming Accounts",45,918,544
+221,"Warez Accounts",66,1017,411
+222,"Sonstige Accounts",65,1435,774
+223,Identitäten/Docs/IDs/,87,1886,1010
+224,"Payment Accounts + CC's",85,1402,737
+225,"Payment Accounts",9,229,116
+226,"Support / Kritik / Verbesserungsvorschläge",175,3866,2106
+231,Botnet,93,2033,998
+232,"Pay TV / Onlineradio",34,1083,495
+233,Exploits,20,418,185
+234,Injections,26,471,221
+235,Archiv,21,634,270
+236,"Hash Verschlüselungen / Passwort Cracking",36,582,294
+237,"Phreaking / Lockpicking",59,1682,867
+238,Trojaner,205,4175,1974
+239,Funktechnik,55,1365,720
+240,Webhosting,63,1161,588
+241,"Real Carding",29,577,377
+242,"EC&amp;amp;CC Dumps",7,142,75
+244,"Karten reader/writer",2,28,16
+245,"GFX and Video",118,2350,1169
+246,"Software &amp;amp; OS",99,1796,953
+247,"Hardware and Tuning",70,1610,751
+249,Offtopic,1303,30485,17514
+251,Sonstiges,238,5271,2482
+252,Crypter/Packer/Binder,27,524,270
+256,"Technik Allgemein",27,550,342
+257,"Rechtliches / Legal",233,6351,3335
+258,Lifestyle,211,6756,4539
+262,Fightclub,10,445,239
+265,"Tools / Software",63,1442,689
+266,Media,24,531,290
+267,Unsorted,61,1712,883
+270,"CC's / Identification / Dumps",130,2249,977
+273,"Not Sorted",226,4534,1717
+274,"Accounts / VPN, Socks",245,3960,1483
+277,Board-Polizei,30,878,432
+278,Ripper-Reports,36,1038,505
+279,User-Beschwerden,56,1188,550
+280,Solved,191,4595,1837
+287,C/C++,6,96,55
+288,"Visual Basic",6,99,63
+290,"ASP, PHP, MySQL, MSSQL, HTML, CSS",11,181,73
+291,"Shell, Batch, Scripting",1,16,10
+292,"Programmierung Allgemein",11,211,133
+293,"VIP Main",6,99,42
+294,"Tutorials / Free Stuff",2,37,15
+296,".NET (VB.NET, C#, ASP.NET, C++.NET)",9,152,89
+304,Teamarea,8,107,55
 306,Projects,1,19,10
-308,"sMod/Admin Area",1,6,5
 309,"Tutorials / Shoplisten",1,18,9
-313,"Allgemeines Archiv",506,6607,2837
-314,"Marktplatz Archiv",942,16276,5909
+313,"Allgemeines Archiv",245,4606,1811
+314,"Marktplatz Archiv",585,13451,4496
 318,"Trial-Moderator Zone",1,13,13
 319,"Tutorials Shop",2,68,44
-322,"Stuff / Goods",13,448,274
-323,"Anonimity &amp; Security",3,25,13
+322,"Stuff / Goods",10,422,257
+323,"Anonimity &amp; Security",1,11,7
 324,"Questions of beginners. Search of employers.",1,11,5
-325,Documents,2,21,19
-327,Information,21,267,133
-328,"Newbie Market",278,3344,1935
-329,"Newbie Searching",42,427,265
+325,Documents,1,11,10
+327,Information,12,198,95
+328,"Newbie Market",110,2061,1115
+329,"Newbie Searching",12,213,121
