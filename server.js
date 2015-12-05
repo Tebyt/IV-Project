@@ -4,14 +4,14 @@ var express = require("express"),
     errorHandler = require('errorhandler'),
     methodOverride = require('method-override'),
     hostname = process.env.HOSTNAME || 'localhost',
-    port = parseInt(process.env.PORT, 10) || 4567,
+    port = parseInt(process.env.PORT, 10) || 9000,
     publicDir = process.argv[2] || __dirname + '';
 
- connectdb();
+//connectdb();
 
  
 app.get("/", function (req, res) {
-  res.redirect("/force_graph_csv/force_graph_group_csv.html");
+  res.redirect("/overview/overview.html");
 });
 
 app.use(methodOverride());
@@ -29,7 +29,7 @@ console.log("Simple static server showing %s listening at http://%s:%s", publicD
  app.listen(port, hostname);
 
 
-connectdb(){
+/*connectdb(){
   var mysql      = require('mysql');
   var connection = mysql.createConnection({
     host     : 'localhost',
@@ -47,6 +47,5 @@ connectdb(){
   });
 
   connection.end();
-}
- app.listen(port, hostname);
+}*/
  

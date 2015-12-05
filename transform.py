@@ -16,7 +16,7 @@ import json
 }
 '''
 isLimit = True
-
+LIMIT = 5000
 #information i.e. {userid}
 def addUserToForum(user_info, row):
 	#Search for the forum in forum_list
@@ -107,7 +107,7 @@ for row in reader:
 		addPostToThread(post_info, row)
 
 		#Add the post information to the users
-	if isLimit and rownum>1000:
+	if isLimit and rownum>LIMIT:
 		break
 	rownum += 1
 
