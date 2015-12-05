@@ -29,7 +29,7 @@ Example format:
 	forum:[
 		{
 			users:	[ {lv:12, 					posts:[{postid, date, threadid}, ...]} ],
-			thread:	[ {title:"credit hacks", 	posts:[{postid, date, userid}, ...]} ]
+			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",
 			numberofthreads:4,
