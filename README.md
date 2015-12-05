@@ -40,6 +40,8 @@ Example format:
 	]
 }, ...]
 
+Side Note: Note that the list of users do not contain a list of posts; the data will simply be too much, and grabbing such information is faster via javascript as opposed as stored in json. To top that, the json file also stores the post's texts, which is itself takes up large portions of the data.
+
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
 
