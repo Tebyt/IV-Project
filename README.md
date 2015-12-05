@@ -21,8 +21,9 @@ This is our reference for the interface.
  
 ### Obtaining the json file, dual_data.json
 1. Install python.
-2. In command line run: python transform.py
-3. The json file is in csv/dual_data.json
+2. Open transform.py. If you want to limit the number of rows, set isLimit = True. Note if you want to limit the number of rows based on the the number of thread replies, run sql_preprocessing/postTimeSeries.sql with the appropriate number of thread replies.
+3. In command line run: python transform.py
+4. The json file is in csv/dual_data.json
 
 Example format:
 [{

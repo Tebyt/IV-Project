@@ -107,7 +107,7 @@ for row in reader:
 		addPostToThread(post_info, row)
 
 		#Add the post information to the users
-	if isLimit and rownum>10000:
+	if isLimit and rownum>1000:
 		break
 	rownum += 1
 
