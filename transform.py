@@ -15,7 +15,7 @@ import json
 	]
 }
 '''
-isLimit = True
+isLimit = False
 
 #information i.e. {userid}
 def addUserToForum(user_info, row):
@@ -26,12 +26,12 @@ def addUserToForum(user_info, row):
 
 			#Check to make sure that the user_info added in the forum_list[index] 
 			userAdded = False
-			for j, userinforum in enumerate(forum_list[index]["user"]):
+			for j, userinforum in enumerate(forum_list[index]["users"]):
 				if userinforum["userid"] == userid:
 					userAdded = True
 					break
 			if not userAdded:
-				forum_list[index]["user"].append(user_info)
+				forum_list[index]["users"].append(user_info)
 
 			isAdded = True
 			break
@@ -67,7 +67,7 @@ with open('csv/forumInfo.csv', 'rb') as f:
 
 	for row in reader:
 		if rownum>0:
-			forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "user":[], "threads":[] }
+			forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "users":[], "threads":[] }
 			#print forum_info
 			forum_list.append(forum_info)
 		rownum = rownum + 1
@@ -93,7 +93,7 @@ for row in reader:
 		userid = row[0]
 		username = row[1]
 		#{lv:_, posts:[{postid, date, threadid}, ...]}
-		user_info = {"userid":userid, "username":username, "posts":[]}
+		user_info = {"userid":userid, "username":username}#, "posts":[]}
 		addUserToForum(user_info, row)
 
 		#group posts by threads
@@ -105,7 +105,7 @@ for row in reader:
 		post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid} 
 		addPostToThread(post_info, row)
 
-		
+		#Add the post information to the users
 	if isLimit and rownum>10000:
 		break
 	rownum += 1
