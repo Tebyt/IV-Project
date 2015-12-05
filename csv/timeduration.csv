@@ -1,0 +1,2 @@
+from_unixtime(max(lastpost)),from_unixtime(min(dateline))
+"2010-12-05 18:01:56","2009-02-22 00:58:54"
