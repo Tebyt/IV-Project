@@ -17,14 +17,6 @@ This is our reference for the interface.
 * **forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
 
 
-
-
-
-### Temporary
-* **q_conn.json** connection data for force graph
-* **force-graph.html** testing page for force graph
-
-
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
 
@@ -79,7 +71,6 @@ This will also be the prefix for your auxiliary functions
 * **network_ ** for network overview
 
 
-
 ## Local server
 Since bracket.io server doesn't automatically load the changes in the code, run the local server instead.
 1. Before running the server install nodejs: https://nodejs.org/en/download/ 
@@ -88,4 +79,3 @@ Since bracket.io server doesn't automatically load the changes in the code, run 
     node server.js
 4. Then, go to the browser and go to the url: http://localhost:4567 
 
- 
