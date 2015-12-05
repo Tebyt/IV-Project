@@ -10,6 +10,15 @@ This is our reference for the interface.
 ### Data
 * **post.csv** post information
 * **quote.csv** quote connection
+* **user.csv** user information including user reputation level and total posts
+* **timeduration.csv** the start and end date of the whole data set i.e. first post and end post. Dates are in the same format as from_unixtime()
+* **postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
+* **threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
+* **forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
+
+
+
+
 
 ### Temporary
 * **q_conn.json** connection data for force graph
@@ -69,12 +78,7 @@ This will also be the prefix for your auxiliary functions
 
 * **network_ ** for network overview
 
-## For Network Overview
-Run force_graph_csv/force_graph_group_csv.html
 
-This file reads data from: 
-1) force_graph_csv/quotes.csv
-2) usersGroupByMostActiveForum.csv
 
 ## Local server
 Since bracket.io server doesn't automatically load the changes in the code, run the local server instead.
@@ -84,8 +88,4 @@ Since bracket.io server doesn't automatically load the changes in the code, run 
     node server.js
 4. Then, go to the browser and go to the url: http://localhost:4567 
 
-## Things TODO:
-1. Tweak the gravity, charge, and friction of the network overview: force_graph_csv/force_graph_group_csv.html
-Right now the graph is simply too tight to each other
-
-2. Create a transition from node click to user-centric view
+ 
