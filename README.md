@@ -28,7 +28,7 @@ Example format:
 [{
 	forum:[
 		{
-			users:	[ {lv:12, 					posts:[{postid, date, threadid}, ...]} ],
+			users:	[ {userid:13, username:"bob", lv:12} ],
 			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",
