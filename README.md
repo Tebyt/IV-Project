@@ -17,8 +17,9 @@ This is our reference for the interface.
 * **timeduration.sql-->timeduration.csv** the start and end date of the whole data set i.e. first post and end post. Dates are in the same format as from_unixtime()
 * **postTimeSeries.sql-->postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
 * **threadInfo.sql-->threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
-* **forumInfo.sql-->forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, admin. This is for the forum dropdown.
+* **forumInfo.sql-->forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, first post date, and last post date. This is for the forum dropdown.
  
+
 ### Obtaining the json file, dual_data.json
 1. Install python.
 2. Open transform.py. If you want to limit the number of rows, set isLimit = True. Note if you want to limit the number of rows based on the the number of thread replies, run sql_preprocessing/postTimeSeries.sql with the appropriate number of thread replies.
@@ -41,8 +42,6 @@ Example format:
 		}
 	]
 }, ...]
-
-Side Note: Note that the list of users do not contain a list of posts; the data will simply be too much, and grabbing such information is faster via javascript as opposed as stored in json. To top that, the json file also stores the post's texts, which is itself takes up large portions of the data.
 
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
