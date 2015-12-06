@@ -22,3 +22,5 @@ inner join
 	on forum.forumid = postthread.forumid
 )as forumpostthread
 on user.userid = forumpostthread.userid
+order by forumpostthread.forumid, forumpostthread.threadid, forumpostthread.postid, forumpostthread.userid
+

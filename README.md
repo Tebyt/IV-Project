@@ -35,19 +35,14 @@ Example format:
 			forumtitle:"credit card",
 			numberofthreads:4,
 			numberofposts:33,
-			activeusers:12
+			activeusers:12,
+			first_post_date:'2010-09-20 06:25:59',
+			last_post_date:'2010-09-20 06:26:60'
 		}
 	]
 }, ...]
 
 Side Note: Note that the list of users do not contain a list of posts; the data will simply be too much, and grabbing such information is faster via javascript as opposed as stored in json. To top that, the json file also stores the post's texts, which is itself takes up large portions of the data.
-
-### How to change the limit of the least number of replies a thread must have
-1. There is a file called sql_preprocessing/postTimeSeries.sql. Open that in mysql and edit line number 17, where it says 4 to what ever reply limit you want. If you want at least 10 replies, then change it to 9. 
-
-2. Run the query and then export the file and save it over csv/postTimeSeries.csv. 
-
-3. Then run transform.py again. csv/dual_data.json should be updated to contain only threads that the least number of replies i.e. the one specified earlier. And keep your eye out for the file size when you commit files to github!! (If too big, then don't commit those csv!)
 
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
