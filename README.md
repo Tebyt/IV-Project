@@ -33,7 +33,7 @@ Example format:
 [{
 	forum:[
 		{
-			users:	[ {userid:13, username:"bob", lv:12} ],
+			users:	[ {userid:13, username:"bob", lv:12, posts:[{threadindex, date}]} ],
 			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",

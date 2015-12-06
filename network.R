@@ -99,7 +99,7 @@ generateLinks <- function(IDs, connections) {
     }
   }
   links <- data.frame(source = fromusers, target = tousers, 
-                      value = counts, group = connections$group);
+                      value = counts);
   return (links[links$value>0, ]);
 }
 
@@ -111,6 +111,17 @@ scale <- function(data, range_min, range_max) {
   r[r<0] = 0;
   return (r);
 }
+
+# scale <- function(data, kept_amount, range_min, range_max) {
+#   qt <- 1 - kept_amount/length(data);
+#   min <- quantile(data, qt);
+#   max <- max(data);
+#   r <- numeric(length(data));
+#   r[data < min] <- 0;
+#   r[data > min] <- round((data[data > min] - min) / (max - min) * 
+#                            (range_max - range_min) + range_min, 2);
+#   return (r);
+# }
 
 generateStrengthByConnection <- function(IDs, links) {
   strength <- integer(length(IDs));
@@ -136,22 +147,22 @@ filterIDByStrength <- function(nodes, strength, num) {
 
 #### Main ####
 
-# IDs <- generateIDs();
-# connections <- generateConnections();
-# # Delete those IDs that never appear in connection
-# IDs <- deleteUnusedIDs(IDs, connections);
-# 
-# # Elliminate abnormal data
-# toDelete = c(18936, 18957, 18950, # only connections among themselves
-#              14116);  # system messages
-# IDs <- deleteIDs(IDs, toDelete);
-# connections <- deleteConnections(connections, toDelete);
-# 
-# # Treat A->B and B->A the same
-# connections <- convertToOneWayConnection(connections);
-# # Order ID so the generated links will be ordered (unnecessary)
-# IDs <- IDs[order(IDs)];
-# links <- generateLinks(IDs, connections);
+IDs <- generateIDs();
+connections <- generateConnections();
+# Delete those IDs that never appear in connection
+IDs <- deleteUnusedIDs(IDs, connections);
+
+# Elliminate abnormal data
+toDelete = c(18936, 18957, 18950, # only connections among themselves
+             14116);  # system messages
+IDs <- deleteIDs(IDs, toDelete);
+connections <- deleteConnections(connections, toDelete);
+
+# Treat A->B and B->A the same
+connections <- convertToOneWayConnection(connections);
+# Order ID so the generated links will be ordered (unnecessary)
+IDs <- IDs[order(IDs)];
+links <- generateLinks(IDs, connections);
 
 strength <- generateStrengthByConnection(IDs, links);
 nodes <- data.frame(name = IDs, r = strength);
@@ -162,16 +173,10 @@ filtered_links <- generateLinks(filtered_nodes$name, connections);
 write.csv(filtered_nodes, file="csv/network_nodes.csv", row.names=FALSE);
 write.csv(filtered_links, file="csv/network_links.csv", row.names=FALSE);
 
-
+nodes$r <- strength;
+nodes$r <- scale(nodes$r, 100, 10, 50);
 
 # nodes <- data.frame(name = IDs, r = r);
 # 
-# write.csv(nodes, file="csv/network_nodes.csv", row.names=FALSE);
-# write.csv(links, file="csv/network_links.csv", row.names=FALSE);
-
-filtered_nodes$group <- 1;
-forceNetwork(Links = filtered_links, Nodes = filtered_nodes,
-             Source = "source", Target = "target",
-             Value = "value", NodeID = "name",
-             Group = "group", opacity = 0.8)
-
+write.csv(nodes, file="csv/network_nodes.csv", row.names=FALSE);
+write.csv(links, file="csv/network_links.csv", row.names=FALSE);
