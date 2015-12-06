@@ -44,7 +44,7 @@ from (
 	inner join
 	/*first_post_date*/
 	(
-		select thread.forumid, from_unixtime(min( post.dateline)) as first_post_date
+		select thread.forumid, (min( post.dateline)) as first_post_date
 		from carderscc_01.thread 
 		left join 
 		carderscc_01.post
@@ -57,7 +57,7 @@ from (
 inner join
 (
 	/*last_post_date*/
-	select thread.forumid, from_unixtime(max( post.dateline)) as last_post_date
+	select thread.forumid, (max( post.dateline)) as last_post_date
 	from carderscc_01.thread 
 	left join 
 	carderscc_01.post
