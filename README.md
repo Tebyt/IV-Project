@@ -33,18 +33,19 @@ Example format:
 [{
 	forum:[
 		{
-			users:	[ {userid:13, username:"bob", lv:12, posts:[{threadindex, date}]} ],
+			users:	[ {userid:13, username:"bob", lv:12, *posts:[{threadindex, date}]} ],
 			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",
 			numberofthreads:4,
 			numberofposts:33,
-			activeusers:12,
-			first_post_date:'2010-09-20 06:25:59',
-			last_post_date:'2010-09-20 06:26:60'
+			numberofusers:12,
+			first_post_date:unix time,
+			last_post_date:unix time
 		}
 	]
 }, ...]
+
 
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:

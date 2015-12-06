@@ -93,8 +93,29 @@
                 /*
                     Show all forums in the forum views
                 */
-                
-                d3.select("#forumvisualization").attr("width", 500).attr("height", 500)
+                var select = d3.select("#forumlist")
+                var row = select.selectAll("tr")
+                    .data(this.data)
+                    .enter()
+                    .append("tr")
+
+                row.append("td")
+                    .text(function(d){
+                        return d.forumtitle
+                    })
+                row.append("td")
+                    .text(function(d){
+                        return d.numberofthreads
+                    })
+                row.append("td")
+                    .text(function(d){
+                        return d.numberofposts
+                    })
+                row.append("td")
+                    .text(function(d){
+                        return d.numberofusers
+                    })
+                /*d3.select("#forumvisualization").attr("width", 500).attr("height", 500)
                 var index = 0;
                 var st = 50, square_width = 100
                 var fontsize = 8
@@ -127,7 +148,7 @@
                     if(index>=this.data.length){
                         break
                     }
-                }
+                }*/
 
             },onSelectForum:function(id){
                 /*
@@ -295,7 +316,30 @@
             <!-- TODO: Here is the visualization of forums -->
             <div class="col-md-6">
                 
-                <svg id="forumvisualization"></svg>
+                <div class="scroll">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+
+                                <th>
+                                    Forum Title
+                                </th>
+                                <th>
+                                    Number of Threads
+                                </th>
+                                <th>
+                                    Number of Posts
+                                </th>
+                                <th>
+                                    Active Users
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="forumlist">
+                            
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -12,6 +12,8 @@ var express = require("express"),
  
 app.get("/", function (req, res) {
   res.redirect("/overview/overview.html");
+  //res.redirect("/Forum/index.html");
+
 });
 
 app.use(methodOverride());
