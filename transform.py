@@ -23,6 +23,7 @@ isLimit = True
 LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
 MAX_NUMBER_OF_POSTS_PER_FORUM = 5000
 
+
 #information i.e. {userid}
 def addUserToForum(user_info, row):
 	#Search for the forum in forum_list
@@ -43,7 +44,7 @@ def addUserToForum(user_info, row):
 			break
 
 	if not isAdded:
-		print "Not added to any forum:"+user_info
+		print "Not added to any forum:"+str(user_info)
 
 
 
@@ -82,7 +83,7 @@ with open('csv/forumInfo.csv', 'rb') as f:
 			forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "users":[], "threads":[], "first_post_date":row[5],"last_post_date":row[6] }
 			#print forum_info
 			numberofposts = int(forum_info["numberofposts"])
-			if numberofposts>=int(LEAST_NUMBER_OF_POSTS_PER_FORUM) and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit:
+			if (numberofposts>=int(LEAST_NUMBER_OF_POSTS_PER_FORUM) and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
 				forum_list.append(forum_info)
 		rownum = rownum + 1
 
@@ -98,12 +99,13 @@ for row in reader:
 	if rownum == 0:
 		header = row
 	else:
-		#row = userid,username,reputationlevelid, forumtitle,forumid,threadtitle,threadid,userid,postid,posttitle,dateposted,posttext
+		#row = userid,username,lv, forumtitle,forumid,threadtitle,threadid,userid,postid,posttitle,dateposted,posttext
+
 		forumid = row[4]
 		forumtitle = row[3]
 		number_of_post_in_forum = getNumPostInForum(forumid)
 
-		if number_of_post_in_forum>=LEAST_NUMBER_OF_POSTS_PER_FORUM  and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit:
+		if (number_of_post_in_forum>=LEAST_NUMBER_OF_POSTS_PER_FORUM  and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
 			#Add the userid, username to the right forum
 			userid = row[0]
 			username = row[1]
@@ -140,6 +142,14 @@ for tindex, threaditem in enumerate(thread_list):
 	if not isThreadAdded:
 		print "Not added to any forum:"+threaditem
 
+
+#for ordered perservation
+for index, item in enumerate(forum_list):
+	for i, thread in enumerate(item["threads"]):
+		thread["posts"].sort(key=lambda post: post["date"], reverse=False)
+		#print "=========="+thread["threadid"]+"========="
+		#for j, post in enumerate(thread["posts"]):
+		#	print post["date"]
 
 with open("csv/dual_data.json", "w") as outfile:
 	json.dump({"data":forum_list}, outfile)
