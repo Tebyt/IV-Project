@@ -98,8 +98,6 @@ This will also be the prefix for your auxiliary functions
 
 
 
-* **network_ ** for network overview
-
 
 ## Local server
 Since bracket.io server doesn't automatically load the changes in the code, run the local server instead.
