@@ -47,7 +47,9 @@ function drawbar(Thread){
     var table = d3.select("div").append("table"),
     thead = table.append("thead"),
     tbody = table.append("tbody");
-
+    
+    var tooltip = d3.select("body").append("div").append("span");
+    
 // append the header row
     thead.append("tr")
         .selectAll("th")
@@ -78,7 +80,17 @@ function drawbar(Thread){
             })
         });
 
-    rows.append("td").html(function(d){return d.threadid;})
+    rows.append("td").html(function(d){return d.threadid.slice(0,10);})
+        .on("mouseover",function(d){
+            tooltip.text(d.threadid);
+            tooltip.style({
+                'position':'absolute',
+                'background-color':'gray',
+                'display':'block',
+                'top': d3.event.y+10+'px',
+                'left':d3.event.x+10+'px'
+            });
+    });
     
     var cln2 = rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.userNum;});
     cln2.append("rect")

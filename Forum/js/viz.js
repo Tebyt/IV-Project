@@ -220,9 +220,22 @@ function formatDate(threads) {
 
 
 function viz_thread_number(threads, forum_rows){
-
+    var tooltip = d3.select("body").append("div").append("span");
+    
     // create a row for each object in the data
-    forum_rows.append("td").html(function(d){return d.title.slice(1,10);})
+    forum_rows.append("td")
+            .html(function(d){return d.title.slice(1,10);})
+            .on("mouseover",function(d){
+                tooltip.text(d.title);
+                tooltip.style({
+                    'position':'absolute',
+                    'background-color':'gray',
+                    'display':'block',
+                    'top': d3.event.y+10+'px',
+                    'left':d3.event.x+10+'px'
+                });
+            });
+    
     forum_rows
         .on("mouseover",function(){
             d3.select(this).style({
