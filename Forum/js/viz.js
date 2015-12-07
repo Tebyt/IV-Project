@@ -1,9 +1,14 @@
 var data;
 d3.json("../csv/dual_data.json", function (d) {
     data = d.data;
-    vizThreads(1);
+    vizThreads(3);
 
 })
+var scale = 50; // Merge data to how many blocks
+var div = "#table";  // The table to show
+
+
+
 
 //function getUserData(forum) {
 //    return data[forum].users;
@@ -31,7 +36,7 @@ function getMinDate(threads) {
           } 
        })
     })
-    return new Date(minDate).setHours(0,0,0,0);
+    return new Date(new Date(minDate*1000).setHours(0,0,0,0));
 }
 
 function getMaxDate(threads) {
@@ -43,16 +48,9 @@ function getMaxDate(threads) {
           } 
        })
     })
-    return new Date(maxDate).setHours(0,0,0,0);
+    return new Date(new Date(maxDate*1000).setHours(0,0,0,0));
 }
 
-function obtainTimeSeries(posts) {
-    return posts.map(function (d) {
-        return {
-            "date": new Date(d.date)
-        }
-    })
-}
 
 function rescale(posts, minDate, maxDate, scale) {
     if(scale == 0) {
@@ -62,7 +60,12 @@ function rescale(posts, minDate, maxDate, scale) {
     }
     posts = posts.map(function (d) {
         return {
-            "date": new Date(Math.round((new Date(d.date).setHours(0,0,0,0) - minDate)/divider)*divider + minDate)
+            "date": new Date(new Date(Math.round((d.date - minDate)/divider)*divider + minDate.getTime()).setHours(0,0,0,0))
+        }
+    })
+    posts = posts.map(function(d) {
+        return {
+            "date": d.date < minDate? minDate : d.date > maxDate? maxDate: d.date
         }
     })
     posts = posts.reduce(function(prev, next) {
@@ -83,7 +86,20 @@ function rescale(posts, minDate, maxDate, scale) {
         })
         return prev;
     }, []);
+    posts.push({
+        "date": new Date(maxDate),
+        "value": 0
+    })
     return posts;
+}
+
+function formatDate(threads) {
+    threads.forEach(function(thread) {
+        thread.posts.forEach(function(post) {
+            post.date = new Date(new Date(post.date*1000).setHours(0,0,0,0));
+        })
+    })
+    return threads;
 }
 
 function vizThreads(forum) {
@@ -91,20 +107,54 @@ function vizThreads(forum) {
 
     var minDate = getMinDate(threads);
     var maxDate = getMaxDate(threads);
-    var selection = d3.select("#graph").selectAll("li").data(threads);
-    selection.enter().append("li").attr("id", function(d, i) {return "forum_graph" + i;});
 
+    threads = formatDate(threads);
+
+    var selection = d3.select(div).selectAll("tr").data(threads);
+    selection.enter().append("tr").append("td").attr("id", function(d, i) {return "forum_graph" + i;});
+
+    threads.forEach(function(thread) {
+        thread.posts = rescale(thread.posts, minDate, maxDate, scale);
+    })
     for (var i = 0; i < threads.length; ++i) {
-        var timeSeries = rescale(threads[i].posts, minDate, maxDate, 100);
+
+        //MG.data_graphic({
+        //    title: "Few Observations",
+        //    description: "We sometimes have only a few observations. By setting missing_is_zero: true, missing values for a time-series will be interpreted as zeros. In this example, we've overridden the rollover callback to show 'no data' for missing observations and have set the min_x and max_x options in order to expand the date range.",
+        //    data: threads[i].posts,
+        //    //interpolate: 'basic',
+        //    missing_is_zero: true,
+        //    width: 600,
+        //    height: 200,
+        //    right: 40,
+        //    min_x: minDate,
+        //    max_x: maxDate,
+        //    target: "#forum_graph"+i,
+        //    mouseover: function(d, i) {
+        //        var df = d3.time.format('%b %d, %Y');
+        //        var date = df(d.date);
+        //        var y_val = (d.value === 0) ? 'no data' : d.value;
+        //
+        //        d3.select('#missing-y svg .mg-active-datapoint')
+        //            .text(date +  '   ' + y_val);
+        //    }
+        //});
         MG.data_graphic({
-            data: timeSeries,
+            data: threads[i].posts,
             //interpolate: 'basic',
+            show_tooltips: false,
             missing_is_zero: true,
-            width: 600,
-            height: 200,
-            right: 40,
-            //x_axis: false,
-            //y_axis: false,
+            width: 130,
+            height: 50,
+            //full_width: true,
+            //full_height: true,
+            right: 0,
+            top: 0,
+            left: 0,
+            bottom: 0,
+            x_axis: false,
+            y_axis: false,
+            area: false,
             //y_rug: true,
             axes_not_compact: false,
             //y_extended_ticks: true,
@@ -113,7 +163,10 @@ function vizThreads(forum) {
             max_x: maxDate,
             target: "#forum_graph"+i,
             mouseover: function(d, i) {
-                //d3.event.preventDefault();
+                d3.event.preventDefault();
+                if (d.value === 0) {
+                    return;
+                }
                 var df = d3.time.format('%b %d, %Y');
                 var date = df(d.date);
                 var y_val = (d.value === 0) ? 'no data' : d.value;
@@ -133,6 +186,8 @@ function vizThreads(forum) {
             }
         });
     }
+
+
 
     //var timeSeries = rescale(curThread.posts, minDate, maxDate, 50);
 
