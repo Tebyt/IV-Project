@@ -34,7 +34,7 @@ Example format:
 [{
 	forum:[
 		{
-			users:	[ {userid:13, username:"bob", lv:12, *posts:[{threadindex, date}]} ],
+			users:	[ {userid:13, username:"bob", lv:12, posts:[{threadindex, date}]} ],
 			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",
@@ -103,8 +103,11 @@ This will also be the prefix for your auxiliary functions
 ## Local server
 Since bracket.io server doesn't automatically load the changes in the code, run the local server instead.
 1. Before running the server install nodejs: https://nodejs.org/en/download/ 
+
 2. Run the terminal and navigate to project folder.
+
 3. Run the following command:
     node server.js
+
 4. Then, go to the browser and go to the url: http://localhost:4567 
 

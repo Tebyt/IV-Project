@@ -5,8 +5,8 @@ import json
 {
 	forum:[
 		{
-			users:		[ {userid:_, username:_, lv:_, 	*posts:[{postid, threadid, date, posttitle, posttext}, ...]} ],
-			threads:	[ {threadid:_, *numberofusers:_, title:_, posts:[{postid, posttitle, date, userid, *userindex}, ...]} ]
+			users:		[ {userid:_, username:_, lv:_, 	posts:[{postid, threadid, date, posttitle, posttext}, ...]} ],
+			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid}, ...]} ]
 			forumid:_ ,
 			forumtitle:_,
 			numberofthreads:_,
@@ -179,7 +179,7 @@ def readUserPosts():
 				posttitle = row[7]
 				posttext = row[8]
 				#{postid, threadid, date, posttitle, posttext}
-				post_info = {"postid":postid, "threadid":threadid, "date":date, "posttitle":posttitle, "posttext":posttext} 
+				post_info = {"postid":postid, "threadid":threadid, "date":date}#, "posttitle":posttitle, "posttext":posttext} 
 				
 				#Find the user in the forum list
 				#Add post_info to the right user in user_list
