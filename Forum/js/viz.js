@@ -14,11 +14,12 @@ function viz_forum(data) {
 
 
 
-    var forum_table = d3.select("body").append("table");
-//    var forum_table = d3.select("#forum");
+//    var forum_table = d3.select("body").append("table");
+    var forum_table = d3.select("#thread");
     // assign thread data to table rows
     forum_table.append("thead").append("tr")
-        .html("<th>Thread title</th><th>Number of Users</th><th>Number of Posts</th><th>Time Series</th>");
+        .html("<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>");
+    //forum_table.select("thead").style({"position": "fixed"});
     var forum_rows = forum_table.append("tbody").selectAll("tr").data(threads)
         .enter().append("tr");
 
@@ -31,12 +32,12 @@ function viz_forum(data) {
             forum_rows.sort(function(a, b){
                 return d3.descending(a[k], b[k]);
             });
-    });
+        });
 
     threads = alterThreads(threads);
 
     viz_thread_number(threads, forum_rows);
-    viz_thread_time_series(threads, forum_rows);
+//    viz_thread_time_series(threads, forum_rows);
 }
 
 // temporary functions
@@ -143,11 +144,11 @@ function viz_thread_time_series(threads, forum_rows) {
 function getMinDate(threads) {
     var minDate = threads[0].posts[0].date;
     threads.forEach(function(thread) {
-       thread.posts.forEach(function(post) {
-          if (post.date < minDate) {
-              minDate = post.date;
-          } 
-       })
+        thread.posts.forEach(function(post) {
+            if (post.date < minDate) {
+                minDate = post.date;
+            }
+        })
     })
     return new Date(new Date(minDate*1000).setHours(0,0,0,0));
 }
@@ -155,11 +156,11 @@ function getMinDate(threads) {
 function getMaxDate(threads) {
     var maxDate = threads[0].posts[0].date;
     threads.forEach(function(thread) {
-       thread.posts.forEach(function(post) {
-          if (post.date > maxDate) {
-              maxDate = post.date;
-          } 
-       })
+        thread.posts.forEach(function(post) {
+            if (post.date > maxDate) {
+                maxDate = post.date;
+            }
+        })
     })
     return new Date(new Date(maxDate*1000).setHours(0,0,0,0));
 }
@@ -223,6 +224,7 @@ function viz_thread_number(threads, forum_rows){
     var tooltip = d3.select("body").append("div").append("span");
     
     // create a row for each object in the data
+//<<<<<<< Updated upstream
     forum_rows.append("td")
             .html(function(d){return d.title.slice(1,10);})
             .on("mouseover",function(d){
@@ -236,6 +238,9 @@ function viz_thread_number(threads, forum_rows){
                 });
             });
     
+//=======
+    forum_rows.append("td").html(function(d){return d.title.slice(0,10);})
+//>>>>>>> Stashed changes
     forum_rows
         .on("mouseover",function(){
             d3.select(this).style({
@@ -249,16 +254,31 @@ function viz_thread_number(threads, forum_rows){
         });
 
 
-
-    var cln2 = forum_rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.userNum;});
+    var maxUserNum = forum_rows.data().reduce(function (prev, next) {
+        if (next.userNum > prev) {
+            prev = next.userNum;
+        }
+        return prev;
+    },0);
+    //var minUserNum = forum_rows.data().reduce(function (prev, next) {
+    //    if (next < prev) {
+    //        prev = next;
+    //    }
+    //    return prev;
+    //});
+    var scale = function (userNum, n) {
+        return (userNum/maxUserNum)*d3.select("#thread").select("thead").selectAll("th:nth-child("+n+")")
+                .node().getBoundingClientRect().width;
+    }
+    var cln2 = forum_rows.append("td").append("svg").attr("height",14).attr("width",function(d){return scale(d.userNum,1);});
     cln2.append("rect")
-        .attr("width",function(d){return d.userNum;})
+        .attr("width",function(d){return scale(d.userNum,1);})
         .attr("height","14")
         .attr("fill","blue");
 
-    var cln3 = forum_rows.append("td").append("svg").attr("height","14").attr("width",function(d){return d.postNum;});
+    var cln3 = forum_rows.append("td").append("svg").attr("height","14").attr("width",function(d){return scale(d.postNum,2);});
     cln3.append("rect")
-        .attr("width",function(d){return d.postNum;})
+        .attr("width",function(d){return scale(d.postNum,2);})
         .attr("height","14")
         .attr("fill","black");
 }

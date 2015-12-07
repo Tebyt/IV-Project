@@ -2,36 +2,89 @@ var data;
 
 d3.json("../csv/dual_data.json", function (d) {
     data = d.data;
-    viz_forum(data);
+    //viz_forum(data);
+    viz_forum_list(data);
 });
 
+function viz_forum_list(data) {
+    var forums = data.map(function(d) {
+        return {
+            forumtitle: d.forumtitle
+        }
+    });
+    d3.select("#search_input")
+        .on("mouseover", function() {
+            d3.select("#search_result").style({
+                "display": "block"
+            });
+            d3.select("#cover").style({
+                "display": "block"
+            });
+        })
+        .on("keyup", function() {
+            var forum = d3.select("#search_input").property("value");
+            if (!forum) {
+                viz_forum_list(window.data);
+                return;
+            }
+            var new_data = window.data.filter(function(d) {
+                return d.forumtitle.toLowerCase().indexOf(forum.toLowerCase()) > 0;
+            });
+            viz_forum_list(new_data);
+        })
+    d3.select("#search_result").html("");
+    d3.select("#search_result")
+        .selectAll("button").data(forums)
+        .enter().append("botton")
+        .text(function(d){return d.forumtitle;})
+        .attr({
+            "type": "button",
+            "class": "list-group-item"
+        })
+        .on("click", function(d, i) {
+            d3.select("#search_result").style({
+                "display": "none"
+            });
+            d3.select("#cover").style({
+                "display": "none"
+            });
+            viz_forum(data[i].threads);
+        })
+        //.on("mouseout", function() {
+        //    d3.select("#search_result").style({
+        //        "display": "none"
+        //    });
+        //    d3.select("#cover").style({
+        //        "display": "none"
+        //    });
+        //})
+    //d3.select("#search_result").selectAll("tr").data(forums).exit().remove();
+    
+}
 
 
-function viz_forum(data) {
-    // Now manually set which forum to use,
-    // Later will be defined by the forum selected
-    var threads = data[2].threads; // use threads in forum 0
+function viz_forum(threads) {
 
-
-
-    var forum_table = d3.select("body").append("table");
-//    var forum_table = d3.select("#forum");
+    //    var forum_table = d3.select("body").append("table");
+    d3.select("#thread").html("");
+    var forum_table = d3.select("#thread");
     // assign thread data to table rows
     forum_table.append("thead").append("tr")
-        .html("<th>Thread title</th><th>Number of Users</th><th>Number of Posts</th><th>Time Series</th>");
+        .html("<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>");
+    forum_table.select("thead").select("tr").selectAll("th").style({"width": "100px"});
     var forum_rows = forum_table.append("tbody").selectAll("tr").data(threads)
         .enter().append("tr");
 
     forum_table.selectAll("th")
-        .data(["title","userNum","postNum", "timeSeries"])
-        .on("click",function(k){
+        .data(["title", "userNum", "postNum", "timeSeries"])
+        .on("click", function (k) {
             if (k === "timeSeries") {
                 return;
             }
-            forum_rows.sort(function(a, b){
+            forum_rows.sort(function (a, b) {
                 return d3.descending(a[k], b[k]);
             });
-    });
+        });
 
     threads = alterThreads(threads);
 
@@ -40,13 +93,12 @@ function viz_forum(data) {
 }
 
 // temporary functions
-function ThreadUserNum(obj){
+function ThreadUserNum(obj) {
     var num = 0;
     var useridarray = Array();
-    for (var i=0; i<obj.length;i++){
-        if(useridarray.indexOf(obj[i]["userid"]) > -1){
-        }else{
-            num+=1;
+    for (var i = 0; i < obj.length; i++) {
+        if (useridarray.indexOf(obj[i]["userid"]) > -1) {} else {
+            num += 1;
             useridarray.push(obj[i]["userid"])
         }
     }
@@ -54,7 +106,7 @@ function ThreadUserNum(obj){
 }
 
 function alterThreads(threads) {
-    threads = threads.map(function(thread) {
+    threads = threads.map(function (thread) {
         thread.userNum = ThreadUserNum(thread.posts);
         thread.postNum = thread.posts.length;
         return thread;
@@ -68,11 +120,9 @@ function viz_thread_time_series(threads, forum_rows) {
     var tooltipid = "#forum_time_series_tooltip";
     d3.select("body").append("div").attr("id", "forum_time_series_tooltip")
         .html('<p id="date"></p><p id="value"></p>')
-        .style(
-        {
+        .style({
             "background-color": "white",
             "border": "solid 1px black",
-            "width": "150px",
             "display": "none",
             "position": "absolute"
         })
@@ -85,12 +135,10 @@ function viz_thread_time_series(threads, forum_rows) {
         return "forum_graph" + i;
     });
 
-    threads.forEach(function (thread) {
-        thread.posts = rescale(thread.posts, threads.minDate, threads.maxDate, scale);
-    })
     for (var i = 0; i < threads.length; ++i) {
+        var data = rescale(threads[i].posts, threads.minDate, threads.maxDate, scale);
         MG.data_graphic({
-            data: threads[i].posts,
+            data: data,
             //interpolate: 'basic',
             show_tooltips: false,
             missing_is_zero: true,
@@ -142,45 +190,45 @@ function viz_thread_time_series(threads, forum_rows) {
 // functions for viz_thread_time_series
 function getMinDate(threads) {
     var minDate = threads[0].posts[0].date;
-    threads.forEach(function(thread) {
-       thread.posts.forEach(function(post) {
-          if (post.date < minDate) {
-              minDate = post.date;
-          } 
-       })
+    threads.forEach(function (thread) {
+        thread.posts.forEach(function (post) {
+            if (post.date < minDate) {
+                minDate = post.date;
+            }
+        })
     })
-    return new Date(new Date(minDate*1000).setHours(0,0,0,0));
+    return new Date(new Date(minDate * 1000).setHours(0, 0, 0, 0));
 }
 
 function getMaxDate(threads) {
     var maxDate = threads[0].posts[0].date;
-    threads.forEach(function(thread) {
-       thread.posts.forEach(function(post) {
-          if (post.date > maxDate) {
-              maxDate = post.date;
-          } 
-       })
+    threads.forEach(function (thread) {
+        thread.posts.forEach(function (post) {
+            if (post.date > maxDate) {
+                maxDate = post.date;
+            }
+        })
     })
-    return new Date(new Date(maxDate*1000).setHours(0,0,0,0));
+    return new Date(new Date(maxDate * 1000).setHours(0, 0, 0, 0));
 }
 
 function rescale(posts, minDate, maxDate, scale) {
-    if(scale == 0) {
+    if (scale == 0) {
         divider = 1;
     } else {
         divider = (maxDate - minDate) / scale;
     }
     posts = posts.map(function (d) {
         return {
-            "date": new Date(new Date(Math.round((d.date - minDate)/divider)*divider + minDate.getTime()).setHours(0,0,0,0))
+            "date": new Date(new Date(Math.round((d.date - minDate) / divider) * divider + minDate.getTime()).setHours(0, 0, 0, 0))
         }
     })
-    posts = posts.map(function(d) {
+    posts = posts.map(function (d) {
         return {
-            "date": d.date < minDate? minDate : d.date > maxDate? maxDate: d.date
+            "date": d.date < minDate ? minDate : d.date > maxDate ? maxDate : d.date
         }
     })
-    posts = posts.reduce(function(prev, next) {
+    posts = posts.reduce(function (prev, next) {
         var matched = false;
         prev.forEach(function (d) {
             if (d.date.getTime() == next.date.getTime()) {
@@ -206,9 +254,9 @@ function rescale(posts, minDate, maxDate, scale) {
 }
 
 function formatDate(threads) {
-    threads.forEach(function(thread) {
-        thread.posts.forEach(function(post) {
-            post.date = new Date(new Date(post.date*1000).setHours(0,0,0,0));
+    threads.forEach(function (thread) {
+        thread.posts.forEach(function (post) {
+            post.date = new Date(new Date(post.date * 1000).setHours(0, 0, 0, 0));
         })
     })
     return threads;
@@ -219,34 +267,62 @@ function formatDate(threads) {
 
 
 
-function viz_thread_number(threads, forum_rows){
+function viz_thread_number(threads, forum_rows) {
+
+    var tooltip = d3.select("body").append("div").append("p");
+    tooltip.style({
+//        "background-color": "white",
+        "border": "solid 1px black",
+        "display": "none",
+        "position": "absolute",
+        "background-color": "white",
+        "color": "blue"
+    })
 
     // create a row for each object in the data
-    forum_rows.append("td").html(function(d){return d.title.slice(1,10);})
-    forum_rows
-        .on("mouseover",function(){
-            d3.select(this).style({
-                "background-color":"rgba(192,192,192,0.5)"
-            })
+    forum_rows.append("td").html(function (d) {
+            return d.title.slice(0, 10);
         })
-        .on("mouseout",function(){
-            d3.select(this).style({
-                "background-color":"white"
-            })
+        .on("mouseover", function (d) {
+            tooltip.text(d.title);
+            tooltip.style({
+                'display': "block",
+                'top': d3.event.y + 10 + 'px',
+                'left': d3.event.x + 10 + 'px'
+            });
+        })
+        .on("mouseout", function (d) {
+            tooltip.style({
+                'display': "none",
+            });
         });
 
 
+    var maxUserNum = forum_rows.data().reduce(function (prev, next) {
+        if (next.userNum > prev) {
+            prev = next.userNum;
+        }
+        return prev;
+    }, 0);
 
-    var cln2 = forum_rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.userNum;});
+    var scale = function (userNum, n) {
+        return (userNum / maxUserNum) * d3.select("#thread").select("thead").selectAll("th:nth-child(" + n + ")")
+            .node().getBoundingClientRect().width;
+        //return (userNum / maxUserNum) * 100;
+    }
+    var cln2 = forum_rows.append("td").append("svg").attr("height", 14).attr("width", scale(maxUserNum,1));
     cln2.append("rect")
-        .attr("width",function(d){return d.userNum;})
-        .attr("height","14")
-        .attr("fill","blue");
+        .attr("width", function (d) {
+            return scale(d.userNum, 1);
+        })
+        .attr("height", "14")
+        .attr("fill", "blue");
 
-    var cln3 = forum_rows.append("td").append("svg").attr("height","14").attr("width",function(d){return d.postNum;});
+    var cln3 = forum_rows.append("td").append("svg").attr("height", "14").attr("width", scale(maxUserNum,2));
     cln3.append("rect")
-        .attr("width",function(d){return d.postNum;})
-        .attr("height","14")
-        .attr("fill","black");
+        .attr("width", function (d) {
+            return scale(d.postNum, 2);
+        })
+        .attr("height", "14")
+        .attr("fill", "blue");
 }
-
