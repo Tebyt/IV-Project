@@ -8,8 +8,6 @@ function dataload(){
     });
 }
 
-var Usersort;
-var Postsort;
 function GetBarInfo(forumid){
     var j = Forumid.indexOf(forumid.toString());
     d3.json("dual_data.json", function(data){
@@ -26,14 +24,6 @@ function GetBarInfo(forumid){
             });
         }
         drawbar(Thread);
-        Usersort = Thread.sort(function(a, b){
-            return d3.descending(a.userNum,b.userNum);
-        });
-        
-        Postsort = Thread.sort(function(a, b){
-            return d3.descending(a.postNum, b.userNum);
-        });
-        
     });
 }
 
@@ -52,6 +42,7 @@ function ThreadUserNum(obj){
 
 function drawbar(Thread){
     var columns = [{"column":"Thread title"},{"column":"Number of Users"},{"column":"Number of Posts"}];
+    var attributes = ["threadid","userNum","postNum"];
    
     var table = d3.select("div").append("table"),
     thead = table.append("thead"),
@@ -63,13 +54,29 @@ function drawbar(Thread){
         .data(columns)
         .enter()
         .append("th")
-            .text(function(d) { return d.column; })
+            .html(function(d) { return d.column; })
+            .data(attributes)
+            .on("click",function(k){
+                rows.sort(function(a, b){
+                    return d3.descending(a[k], b[k]);
+            });
+        });
 
 // create a row for each object in the data
     var rows = tbody.selectAll("tr")
         .data(Thread)
         .enter()
-        .append("tr");
+        .append("tr")
+        .on("mouseover",function(){
+            d3.select(this).style({
+                "background-color":"rgba(192,192,192,0.5)"
+            })
+        })
+        .on("mouseout",function(){
+            d3.select(this).style({
+                "background-color":"white"
+            })
+        });
 
     rows.append("td").html(function(d){return d.threadid;})
     
@@ -84,7 +91,8 @@ function drawbar(Thread){
             .attr("width",function(d){return d.postNum;})
             .attr("height",14)
             .attr("fill","black");
-    
-    
- 
+
+
 }
+
+

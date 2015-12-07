@@ -200,7 +200,7 @@ function formatDate(threads) {
 
 
 // functions for viz_forum_number_of_users(threads, forum_rows);
-
+    
 
 
 
