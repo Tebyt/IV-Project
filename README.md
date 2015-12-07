@@ -21,7 +21,8 @@ The interface framework in overview/overview.html
 * **postTimeSeries.sql-->postTimeSeries.csv** information to use in the svg for each user i.e. for each user, post number over some duration versus times, where duration can be month, week, day
 * **threadInfo.sql-->threadInfo.csv** Information about each thread: threadid, thread title, total posts, total active users.  This should be used when displaying the SVGs for the threads on the dual view.
 * **forumInfo.sql-->forumInfo.csv** Information on the forums: forum, forumid, number of threads, number of posts, number of active users, first post date, and last post date. This is for the forum dropdown.
- 
+* **userPostInfo.sql** user and their posts-->userPostInfo.csv
+
 
 ### Obtaining the json file, dual_data.json
 1. Install python.
