@@ -19,7 +19,7 @@ import json
 }
 *To add
 '''
-isLimit = True
+isLimit = False
 LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
 MAX_NUMBER_OF_POSTS_PER_FORUM = 5000
 

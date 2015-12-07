@@ -7,40 +7,12 @@ d3.json("../csv/dual_data.json", function (d) {
 });
 
 function viz_forum_list(data) {
-    var forums = data.map(function(d) {
-        return {
-            forumtitle: d.forumtitle
-        }
-    });
-    d3.select("#search_input")
-        .on("mouseover", function() {
-            d3.select("#search_result").style({
-                "display": "block"
-            });
-            d3.select("#cover").style({
-                "display": "block"
-            });
-        })
-        .on("keyup", function() {
-            var forum = d3.select("#search_input").property("value");
-            if (!forum) {
-                viz_forum_list(window.data);
-                return;
-            }
-            var new_data = window.data.filter(function(d) {
-                return d.forumtitle.toLowerCase().indexOf(forum.toLowerCase()) > 0;
-            });
-            viz_forum_list(new_data);
-        })
-    d3.select("#search_result").html("");
-    d3.select("#search_result")
-        .selectAll("button").data(forums)
-        .enter().append("botton")
-        .text(function(d){return d.forumtitle;})
-        .attr({
-            "type": "button",
-            "class": "list-group-item"
-        })
+    var table = d3.select("#search_result");
+    table.append("thead").append("tr")
+        .html("<th>Forum Name</th><th># of Threads</th><th># of Users</th>");
+
+    var table_rows = table.append("tbody").selectAll("tr").data(data)
+        .enter().append("tr")
         .on("click", function(d, i) {
             d3.select("#search_result").style({
                 "display": "none"
@@ -49,17 +21,26 @@ function viz_forum_list(data) {
                 "display": "none"
             });
             viz_forum(data[i].threads);
+        });
+    table_rows.append("td").text(function(d) {return d.forumtitle;});
+    table_rows.append("td").text(function(d) {return d.numberofthreads;});
+    table_rows.append("td").text(function(d) {return d.numberofusers;});
+    table.selectAll("th")
+        .data(["forumtitle", "numberofthreads", "numberofusers"])
+        .on("click", function (k) {
+            table_rows.sort(function (a, b) {
+                return d3.descending(a[k], b[k]);
+            });
+        });
+    d3.select("#forum_search")
+        .on("click", function() {
+            d3.select("#search_result").style({
+                "display": "table"
+            });
+            d3.select("#cover").style({
+                "display": "block"
+            });
         })
-        //.on("mouseout", function() {
-        //    d3.select("#search_result").style({
-        //        "display": "none"
-        //    });
-        //    d3.select("#cover").style({
-        //        "display": "none"
-        //    });
-        //})
-    //d3.select("#search_result").selectAll("tr").data(forums).exit().remove();
-    
 }
 
 
@@ -159,8 +140,8 @@ function viz_thread_time_series(threads, forum_rows) {
             axes_not_compact: false,
             //y_extended_ticks: true,
             //yax_count: 0,
-            min_x: threads.minDate,
-            max_x: threads.maxDate,
+            //min_x: threads.minDate,
+            //max_x: threads.maxDate,
             target: "#forum_graph" + i,
             mouseover: function (d, i) {
                 d3.event.preventDefault();
