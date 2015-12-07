@@ -1,8 +1,10 @@
 <!DOCTYPE html >
 <html>
+
 <head>
     <!--<script src="d3.min.js" type="text/javascript" charset="utf-8"></script>-->
-    
+
+    <link rel="stylesheet" href="css/metricsgraphics.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
@@ -11,6 +13,9 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/lodash.js"></script>
 
+    <script src="js/metricsgraphics.min.js"></script>
+    <script src="js/viz.js"></script>
+
     <meta charset="utf-8">
 
     <title>Underground Forums</title>
@@ -18,279 +23,64 @@
 
 </head>
 <style>
-.scroll {
-    height: 500px;
-    overflow: scroll;
-}
+    .scroll {
+        height: 500px;
+        overflow: scroll;
+    }
+    
+    #cover {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 5;
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+    
+    #search_result {
+        display: none;
+        background: #FFFFFF;
+    }
+    
+    #div_search {
+        position: absolute;
+        width: inherit;
+        margin-top: 20px;
+        z-index: 20;
+    }
+
+    #div_forum {
+        position: absolute;
+        width: inherit;
+        top: 60px;
+    }
+
 </style>
+
 <body>
+    
 
-    <script type="text/javascript">
-        //var data;
-        
-        var scaleXRangeBegin = 25, 
-                scaleXRangeEnd = 580;
-            var scaleYRangeBegin = 20, 
-                scaleYRangeEnd = 380;
-        
-        var Dispatcher = {
-            add: function(view){
-                if(!this.subscribers){
-                    this.subscribers = [];
-                }
-                this.subscribers.push(view);
-            }, notify: function(type, payload){
-                this.subscribers.forEach(function(s){
-                    s[type](payload); 
-                });
-            }
-        }
-        
-        var Controller = {
-            loadData: function(data){
-                this.data = data;
-                Dispatcher.notify('dataUpdated', this.data);
-            }, remove: function(d){
-                this.data.splice(this.indexByKey(d.name), 1);
-                Dispatcher.notify('dataUpdated', this.data); //Notify the views that the data has been updated.
-            },
-            indexByKey: function(key) {
-                for(var i = 0; i< this.data.length; i++){
-                    if(this.data[i].name == key) {
-                        return i;
-                    }
-                }
-                return -1;
-            }, filter: function(value) {
-                var dt = this.data.filter(function(d) {
-                    return d.name.toLowerCase().indexOf(value.toLowerCase()) > -1;
-                })
-                Dispatcher.notify('dataUpdated', dt);
-            }
-        }
-        
-        var ForumList = {
-            init: function(data){
-                this.data = data
-
-                for(var i=0; i<this.data.length; i++){
-                    this.data[i].isShow = true
-                }
-
-                var select = d3.select("#forumdropdown")
-
-                select
-                    .selectAll("li")
-                    .data(data)
-                    .enter()
-                    .append("li")
-                    .append("a")
-                    .attr("onclick", function(d) { 
-                        return "Dispatcher.notify('onSelectForum',"+ d.forumid+")"
-                    })
-                    .text(function(d) {   return d.forumtitle; });
-
-                /*
-                    Show all forums in the forum views
-                */
-                var select = d3.select("#forumlist")
-                var row = select.selectAll("tr")
-                    .data(this.data)
-                    .enter()
-                    .append("tr")
-
-                row.append("td")
-                    .text(function(d){
-                        return d.forumtitle
-                    })
-                row.append("td")
-                    .text(function(d){
-                        return d.numberofthreads
-                    })
-                row.append("td")
-                    .text(function(d){
-                        return d.numberofposts
-                    })
-                row.append("td")
-                    .text(function(d){
-                        return d.numberofusers
-                    })
-                /*d3.select("#forumvisualization").attr("width", 500).attr("height", 500)
-                var index = 0;
-                var st = 50, square_width = 100
-                var fontsize = 8
-                for(var i=0; true; i++){
-                    for(var j=0; j<4; j++){
-                        var square = d3.select("#forumvisualization")
-                            .append("rect")
-                            .attr("fill", "none")
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 1)
-                            .attr("x", st+(square_width+10)*j)
-                            .attr("y", st+(square_width+10)*i)
-                            .attr("width", square_width)
-                            .attr("height", square_width)
-
-                        d3.select("#forumvisualization").append("text")
-                            .attr("x", 1+st+(square_width+10)*j)
-                            .attr("y", 5+fontsize+st+(square_width+10)*i)
-                            .text(this.data[index].forumtitle )
-                            .attr("font-family", "sans-serif")
-                            .attr("font-size", fontsize+"px")
-                            .attr("fill", "black");
-
-                        console.log(this.data[index].forumtitle )
-                        index++;
-                        if(index>=this.data.length){
-                            break
-                        }
-                    }
-                    if(index>=this.data.length){
-                        break
-                    }
-                }*/
-
-            },onSelectForum:function(id){
-                /*
-                    When a forum is selected in the dropdown, set the title here, etc
-                    Show the users in the user view
-                */
-                console.log("Display forum here", this.data)
-                var index = _.findIndex(this.data, function(chr) {
-                    return chr.forumid == id;
-                });
-                var forum_info = this.data[index];
-                var text = forum_info.forumtitle;
-                d3.select("#forumtitle").text("Forum: "+text);
-
-                var select = d3.select("#userlist")
-                var row = select.selectAll("tr")
-                    .data(forum_info.users)
-                    .enter()
-                    .append("tr")
-
-                row.append("td")
-                    .text(function(d){
-                        return d.username
-                    })
-                row.append("td")
-                    .text(function(d){
-                        return d.lv
-                    })
-
-                /*
-                TODO:Append SVG here!
-                */
-                row.append("td")
-                /*
-                TODO:Append SVG here!
-                */
-                row.append("td")
-
-                /*
-                Add a search filter
-                */
-                /*d3.select("search_forum").on("input", function() {
-                   var user_search = this.value
-                   if(user_search){
-                       for(var i=0; i<this.data.length; i++){
-                            if(!this.data[i].username.contain(user_search)){
-                                this.data[i].isShow = false
-                            }else{
-                                this.data[i].isShow = true
-                            }
-                        }
-                    }
-                });
-
-                d3.select("userlist")
-                    .selectAll("tr")
-                    .filter(function(d){return !d.isShow})
-                */
-
-                    
-            }
-        }
-        
-        d3.json("../csv/dual_data.json", function(result){
-            dataloaded(result);
-        });//need server to call this
-        
-        function dataloaded(result){
-            ForumList.init(result.data);
-            Dispatcher.add(ForumList);
-
-            //Datalist.init(data);
-            //Scatterplot.init();
-
-            //Dispatcher.add(Scatterplot);
-            //Dispatcher.add(Datalist);
-
-            //Controller.loadData(data);
-        }
-        
-        //----------------------------------------------------------------------
-        function getNewData() {
-            var data = JSON.parse(d3.select("#search_forum").node().value);
-            return data;
-        }
-        
-        function search_button_click(){
-            var search_text = d3.select("#search_forum").node().value;
-            var GDP = 0;
-
-            //Search through countries array
-            for(var i=0; i<data.length; i++){
-                if(data[i].name == search_text){
-                    GDP = data[i].GDP;
-                    //Set interface GDP
-                    d3.select("#amount").text("$"+GDP);
-                    break;
-                }
-            }
-
-            console.log("search text: "+ search_text + " corresponding GDP:"+ GDP);
-            
-            
-        }
-      
-    </script>
 
     <div class="container">
-        
-         <!-- TODO: Here is the forums information -->
-        <div class="row">
-            <div class="col-md-4">
 
-                <p class="lead">
-                    <div class="btn-group">
-                 
-                        <button class="btn btn-default">
-                            Select forum
-                        </button> 
-                        <button data-toggle="dropdown" class="btn btn-default dropdown-toggle">
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" id="forumdropdown">
-                        </ul>
-                    </div>
-                </p>
+        <div class="row" id="div_search">
+            <div class="col-lg-12">
+                <button class="btn btn-default" type="button" id="forum_search" style="width: 100%">
+                    Forums
+                    <span class="caret"></span>
+                </button>
+                <table class="table scroll" id="search_result">
+                </table>
             </div>
-            <div class="col-md-8">
-                <h3><p class="lead" id="forumtitle">Forum Vis</p></h3>
-             </div>
         </div>
+        <div id="cover"> </div>
         <!-- TODO: Here is the list of users -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="row">
-                    Search: 
-                    <input type="text" id="search_forum"> 
-                    <!--<input type="button" id="search" onclick="search_button_click()" value="Go" > -->
-                </div>
-
+        <div class="row" id="div_forum">
+            <div class="col-md-4">
                 <div class="scroll">
-                    <table class="table table-condensed">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>
@@ -300,49 +90,49 @@
                                     Reputation Level
                                 </th>
                                 <th>
-                                    SVG 1: TODO
-                                </th>
-                                <th>
-                                    SVG 2: TODO
+                                    SVG 1
                                 </th>
                             </tr>
                         </thead>
                         <tbody id="userlist">
-                            
+
                         </tbody>
                     </table>
                 </div>
             </div>
             <!-- TODO: Here is the visualization of forums -->
-            <div class="col-md-6">
-                
+            <div class="col-md-8">
                 <div class="scroll">
-                    <table class="table table-condensed">
+                    <table class="table table-hover" id="thread">
                         <thead>
-                            <tr>
-
-                                <th>
-                                    Forum Title
-                                </th>
-                                <th>
-                                    Number of Threads
-                                </th>
-                                <th>
-                                    Number of Posts
-                                </th>
-                                <th>
-                                    Active Users
-                                </th>
-                            </tr>
+                        <tr>
+                            <th style="width:100px">
+                                Thread Title
+                            </th>
+                            <th>
+                                # of Users
+                            </th>
+                            <th>
+                                # of Posts
+                            </th>
+                            <th>
+                                Time Series
+                            </th>
+                        </tr>
                         </thead>
-                        <tbody id="forumlist">
-                            
-                        </tbody>
                     </table>
                 </div>
             </div>
+
+            <div class="col-md-12">
+
+            </div>
         </div>
+
+
     </div>
-    
- </body>
+
+
+</body>
+
 </html>
