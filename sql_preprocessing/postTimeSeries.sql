@@ -1,4 +1,4 @@
-/* postTimeSeries*/
+/* postTimeSeries */
 select user.userid, user.username, user.reputationlevelid as lv, 
 forumpostthread.*
 from carderscc_01.user 

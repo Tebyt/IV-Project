@@ -1,4 +1,4 @@
-/* threadInfo*/
+/* threadInfo  */
 select thread.*, count(post.userid) as activeusers
 from 
 (
