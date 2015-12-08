@@ -37,7 +37,7 @@ function viz_forum(data) {
     threads = alterThreads(threads);
 
     viz_thread_number(threads, forum_rows);
-//    viz_thread_time_series(threads, forum_rows);
+//    viz_time_series(threads, forum_rows);
 }
 
 // temporary functions
@@ -140,7 +140,7 @@ function viz_thread_time_series(threads, forum_rows) {
         });
     }
 }
-// functions for viz_thread_time_series
+// functions for viz_time_series
 function getMinDate(threads) {
     var minDate = threads[0].posts[0].date;
     threads.forEach(function(thread) {

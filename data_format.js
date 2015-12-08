@@ -26,3 +26,27 @@
     }
 
 ]
+
+omit user who has not post: 
+create table user
+select distinct(post.userid) from
+    post left join user
+where user is not null 
+
+filter user who has less than n post
+
+filter thread which has less than n post
+
+filter 
+
+count userid in post to filter user (only select userid with count > n)
+
+
+
+count threadid in post to filter threadid (only select thread with count > n)
+    right join with thread to filter thread 
+
+count forumid in thread to filter forumid (only select forum with thread > n)
+    right join with forum to filter forum
+    
+    

@@ -2,7 +2,6 @@ var data;
 
 d3.json("../csv/dual_data.json", function (d) {
     data = d.data;
-    //viz_forum(data);
     viz_forum_list(data);
 });
 
@@ -20,7 +19,8 @@ function viz_forum_list(data) {
             d3.select("#cover").style({
                 "display": "none"
             });
-            viz_forum(data[i].threads);
+            viz_user(data[i].users);
+            viz_thread(data[i].threads);
         });
     table_rows.append("td").text(function(d) {return d.forumtitle;});
     table_rows.append("td").text(function(d) {return d.numberofthreads;});
@@ -44,33 +44,48 @@ function viz_forum_list(data) {
 }
 
 
-function viz_forum(threads) {
-
-    //    var forum_table = d3.select("body").append("table");
-    d3.select("#thread").html("");
-    var forum_table = d3.select("#thread");
-    // assign thread data to table rows
-    forum_table.append("thead").append("tr")
-        .html("<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>");
-    forum_table.select("thead").select("tr").selectAll("th").style({"width": "100px"});
-    var forum_rows = forum_table.append("tbody").selectAll("tr").data(threads)
+function viz_table_structure(dataset, div_table, thhtml, thdata) {
+    d3.select(div_table).html("");
+    var table = d3.select(div_table);
+    table.append("thead").append("tr")
+        .html(thhtml);
+    var table_rows = table.append("tbody").selectAll("tr").data(dataset)
         .enter().append("tr");
 
-    forum_table.selectAll("th")
-        .data(["title", "userNum", "postNum", "timeSeries"])
+    table.selectAll("th")
+        .data(thdata)
         .on("click", function (k) {
             if (k === "timeSeries") {
                 return;
             }
-            forum_rows.sort(function (a, b) {
+            table_rows.sort(function (a, b) {
                 return d3.descending(a[k], b[k]);
             });
         });
+    return table_rows;
+}
 
+function viz_thread(threads) {
+    var table_rows = viz_table_structure(threads, "#thread",
+        "<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>",
+        ["title", "userNum", "postNum", "timeSeries"]);
     threads = alterThreads(threads);
+    threads = addMinMax(threads);
 
-    viz_thread_number(threads, forum_rows);
-    viz_thread_time_series(threads, forum_rows);
+    viz_thread_number(threads, table_rows);
+    viz_time_series(threads, table_rows, "time_thread");
+}
+
+function viz_user(users) {
+    table_rows = viz_table_structure(users, "#user",
+        "<th>User ID</th><th>Time Series</th>",
+        ["userid", "lv", "timeSeries"]
+    )
+    users = addMinMax(users);
+    table_rows.append("td").text(function (d) {
+        return d.userid;
+    })
+    viz_time_series(users, table_rows, "time_user");
 }
 
 // temporary functions
@@ -92,14 +107,11 @@ function alterThreads(threads) {
         thread.postNum = thread.posts.length;
         return thread;
     });
-    threads.minDate = getMinDate(threads);
-    threads.maxDate = getMaxDate(threads);
     return threads;
 }
 
-function viz_thread_time_series(threads, forum_rows) {
-    var tooltipid = "#forum_time_series_tooltip";
-    d3.select("body").append("div").attr("id", "forum_time_series_tooltip")
+function viz_time_series(dataset, forum_rows, id) {
+    d3.select("body").append("div").attr("id", "tooltip_"+id)
         .html('<p id="date"></p><p id="value"></p>')
         .style({
             "background-color": "white",
@@ -110,14 +122,14 @@ function viz_thread_time_series(threads, forum_rows) {
 
     var scale = 50; // Merge data to how many blocks
 
-    threads = formatDate(threads);
+    dataset = formatDate(dataset);
 
     forum_rows.append("td").attr("id", function (d, i) {
-        return "forum_graph" + i;
+        return id + i;
     });
 
-    for (var i = 0; i < threads.length; ++i) {
-        var data = rescale(threads[i].posts, threads.minDate, threads.maxDate, scale);
+    for (var i = 0; i < dataset.length; ++i) {
+        var data = rescale(dataset[i].posts, dataset.minDate, dataset.maxDate, scale);
         MG.data_graphic({
             data: data,
             //interpolate: 'basic',
@@ -140,9 +152,9 @@ function viz_thread_time_series(threads, forum_rows) {
             axes_not_compact: false,
             //y_extended_ticks: true,
             //yax_count: 0,
-            //min_x: threads.minDate,
-            //max_x: threads.maxDate,
-            target: "#forum_graph" + i,
+            min_x: dataset.minDate,
+            max_x: dataset.maxDate,
+            target: "#" + id + i,
             mouseover: function (d, i) {
                 d3.event.preventDefault();
                 if (d.value === 0) {
@@ -152,7 +164,7 @@ function viz_thread_time_series(threads, forum_rows) {
                 var date = df(d.date);
                 var y_val = (d.value === 0) ? 'no data' : d.value;
 
-                var tooltip = d3.select(tooltipid);
+                var tooltip = d3.select("tooltip_"+id);
                 tooltip.select("#date").text("date: " + date);
                 tooltip.select("#value").text("#ofPosts: " + y_val);
                 tooltip.style({
@@ -162,16 +174,22 @@ function viz_thread_time_series(threads, forum_rows) {
                 });
             },
             mouseout: function () {
-                var tooltip = d3.select(tooltipid);
+                var tooltip = d3.select("tooltip_"+id);
                 tooltip.style("display", "none");
             }
         });
     }
 }
-// functions for viz_thread_time_series
-function getMinDate(threads) {
-    var minDate = threads[0].posts[0].date;
-    threads.forEach(function (thread) {
+
+function addMinMax(dataset) {
+    dataset.minDate = getMinDate(dataset);
+    dataset.maxDate = getMaxDate(dataset);
+    return dataset;
+}
+// functions for viz_time_series
+function getMinDate(dataset) {
+    var minDate = dataset[0].posts[0].date;
+    dataset.forEach(function (thread) {
         thread.posts.forEach(function (post) {
             if (post.date < minDate) {
                 minDate = post.date;
@@ -181,9 +199,9 @@ function getMinDate(threads) {
     return new Date(new Date(minDate * 1000).setHours(0, 0, 0, 0));
 }
 
-function getMaxDate(threads) {
-    var maxDate = threads[0].posts[0].date;
-    threads.forEach(function (thread) {
+function getMaxDate(dataset) {
+    var maxDate = dataset[0].posts[0].date;
+    dataset.forEach(function (thread) {
         thread.posts.forEach(function (post) {
             if (post.date > maxDate) {
                 maxDate = post.date;
@@ -204,11 +222,11 @@ function rescale(posts, minDate, maxDate, scale) {
             "date": new Date(new Date(Math.round((d.date - minDate) / divider) * divider + minDate.getTime()).setHours(0, 0, 0, 0))
         }
     })
-    posts = posts.map(function (d) {
-        return {
-            "date": d.date < minDate ? minDate : d.date > maxDate ? maxDate : d.date
-        }
-    })
+    //posts = posts.map(function (d) {
+    //    return {
+    //        "date": d.date < minDate ? minDate : d.date > maxDate ? maxDate : d.date
+    //    }
+    //})
     posts = posts.reduce(function (prev, next) {
         var matched = false;
         prev.forEach(function (d) {
