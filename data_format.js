@@ -1,26 +1,28 @@
 "forums": [
     {
         users: [{
+            username: String,
             number_of_posts: Integer,
             number_of_threads: Integer, // distinct threads
+            first_post_date: Integer,
+            last_post_date: Integer,
             posts: [{
                 postid: Integer,
                 threadindex: Integer, // the index related to the below threads data field (0...length(threads))
                 date: Integer
             }],
-            first_post_date: Integer,
-            last_post_date: Integer,
         }],
         threads: [{
             title: String,
+            number_of_users: Integer, // distinct users that have participated in a thread
+            number_of_posts: Integer,
+            first_post_date: Integer,
+            last_post_date: Integer,
             posts: [{
                 postid: Integer,
                 date: Integer,
                 userindex: Integer // the index related to the above users data field (0... length(users))
             }],
-            number_of_users: Integer, // distinct users that have participated in a thread,
-            first_post_date: Integer,
-            last_post_date: Integer,
         }],
         forumtitle: String,
         first_post_date: Integer,
