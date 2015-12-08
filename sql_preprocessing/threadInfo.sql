@@ -10,7 +10,7 @@ from
 left outer join
 carderscc_01.post
 on thread.threadid = post.threadid
-where thread.totposts>5
+where thread.totposts>10
 group by post.threadid
 order by thread.threadid, post.userid
 

@@ -17,9 +17,12 @@ import json
 		}
 	]
 }
+
+
+
 *To add
 '''
-isLimit = False
+isLimit = True
 LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
 MAX_NUMBER_OF_POSTS_PER_FORUM = 5000
 
@@ -31,7 +34,7 @@ def readForums():
 
 		for row in reader:
 			if rownum>0:
-				forum_info = {"forumid":int(row[0]), "forumtitle":row[1], "numberofthreads":int(row[2]), "numberofposts":int(row[3]),"numberofusers":int(row[4]), "users":[], "threads":[], "first_post_date":row[5],"last_post_date":row[6] }
+				forum_info = {"forumid":int(row[0]), "forumtitle":row[1], "numberofthreads":int(row[2]), "numberofposts":int(row[3]),"numberofusers":int(row[4]), "users":[], "threads":[], "first_post_date":int(row[5]),"last_post_date":int(row[6]) }
 				#print forum_info
 				numberofposts = int(forum_info["numberofposts"])
 				if (numberofposts>=int(LEAST_NUMBER_OF_POSTS_PER_FORUM) and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
@@ -113,10 +116,10 @@ def readTimeSeries():
 				#group posts by threads
 				postid = int(row[8])
 				posttitle = row[9]
-				dateposted = row[10]
+				dateposted = int(row[10])
 				posttext = row[11]
 				#{postid, posttitle, date, userid}
-				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid, "posttext":posttext} 
+				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid}#, "posttext":posttext} 
 				addPostToThread(post_info, row)
 
 			#Add the post information to the users
@@ -175,7 +178,7 @@ def readUserPosts():
 				#Add post information to list of users in forum_list
 				postid = int(row[3])
 				threadid = int(row[4])
-				date = row[6]
+				date = int(row[6])
 				posttitle = row[7]
 				posttext = row[8]
 				#{postid, threadid, date, posttitle, posttext}
