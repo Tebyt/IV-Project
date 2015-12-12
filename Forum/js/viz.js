@@ -216,7 +216,7 @@ function formatDate(threads) {
 }
 
 
-// functions for viz_thread_number
+// functions for viz_number
 
 
 
