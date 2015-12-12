@@ -6,7 +6,7 @@ from
 	select post.*, thread.forumid
 	from carderscc_01.post inner join carderscc_01.thread 
 	on post.threadid = thread.threadid
-	where thread.replycount>9
+	where thread.replycount>9 
 )as postfilter
 inner join
 carderscc_01.user

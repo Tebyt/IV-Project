@@ -1,4 +1,4 @@
-/* forumInfo: forum, forumid, number of threads, number of posts, number of active users, admin*/
+/* forumInfo: forum, forumid, number of threads, number of posts, number of active users*/
 select foruminfo.*, last_post_date_table.last_post_date
 from (
 	select foruminfo1.*, first_post_date_table.first_post_date

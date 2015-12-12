@@ -17,6 +17,9 @@ import json
 		}
 	]
 }
+
+
+
 *To add
 '''
 isLimit = True
@@ -31,7 +34,7 @@ def readForums():
 
 		for row in reader:
 			if rownum>0:
-				forum_info = {"forumid":row[0], "forumtitle":row[1], "numberofthreads":row[2], "numberofposts":row[3],"numberofusers":row[4], "users":[], "threads":[], "first_post_date":row[5],"last_post_date":row[6] }
+				forum_info = {"forumid":int(row[0]), "forumtitle":row[1], "numberofthreads":int(row[2]), "numberofposts":int(row[3]),"numberofusers":int(row[4]), "users":[], "threads":[], "first_post_date":int(row[5]),"last_post_date":int(row[6]) }
 				#print forum_info
 				numberofposts = int(forum_info["numberofposts"])
 				if (numberofposts>=int(LEAST_NUMBER_OF_POSTS_PER_FORUM) and numberofposts<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
@@ -63,9 +66,9 @@ def addUserToForum(user_info, row):
 
 
 def addPostToThread(post_info, row):
-	threadid = row[6]
+	threadid = int(row[6])
 	threadtitle = row[5]
-	forumid = row[4]
+	forumid = int(row[4])
 
 	#Add post_info the the right thread in thread_list
 	isPostAdded = False
@@ -76,7 +79,7 @@ def addPostToThread(post_info, row):
 			break
 	#thread_info = [ {threadid, title:_, posts:[post_info, ...]} ]
 	if not isPostAdded:
-		thread_list.append({"threadid":threadid, "title":threadtitle, "posts":[post_info], "forumid":forumid})
+		thread_list.append({"threadid":int(threadid), "title":threadtitle, "posts":[post_info], "forumid":int(forumid)})
 		
 
 def getNumPostInForum(forumid):
@@ -97,26 +100,26 @@ def readTimeSeries():
 		else:
 			#row = userid,username,lv, forumtitle,forumid,threadtitle,threadid,userid,postid,posttitle,dateposted,posttext
 
-			forumid = row[4]
+			forumid = int(row[4])
 			forumtitle = row[3]
 			number_of_post_in_forum = getNumPostInForum(forumid)
 
 			if (number_of_post_in_forum>=LEAST_NUMBER_OF_POSTS_PER_FORUM  and number_of_post_in_forum<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
 				#Add the userid, username to the right forum
-				userid = row[0]
+				userid = int(row[0])
 				username = row[1]
-				lv = row[2]
+				lv = int(row[2])
 				#{lv:_, posts:[{postid, date, threadid}, ...]}
 				#user_info = {"userid":userid, "username":username, "lv":lv}#, "posts":[]}
 				#addUserToForum(user_info, row)
 
 				#group posts by threads
-				postid = row[8]
+				postid = int(row[8])
 				posttitle = row[9]
-				dateposted = row[10]
+				dateposted = int(row[10])
 				posttext = row[11]
 				#{postid, posttitle, date, userid}
-				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid, "posttext":posttext} 
+				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid}#, "posttext":posttext} 
 				addPostToThread(post_info, row)
 
 			#Add the post information to the users
@@ -160,22 +163,22 @@ def readUserPosts():
 		else:
 			#row = userid,username,lv,postid,threadid,forumid,date,posttitle,posttext
 
-			forumid = row[5]
+			forumid = int(row[5])
 			number_of_post_in_forum = getNumPostInForum(forumid)
 
 			#Filter out the posts that do not belong in the forums that arent within the limits
 			if (number_of_post_in_forum>=LEAST_NUMBER_OF_POSTS_PER_FORUM  and number_of_post_in_forum<=int(MAX_NUMBER_OF_POSTS_PER_FORUM) and isLimit) or not isLimit:
 				#Add the userid, username to the right forum
-				userid = row[0]
+				userid = int(row[0])
 				username = row[1]
-				lv = row[2]
+				lv = int(row[2])
 				#{userid:_, username:_, lv:_, posts:[{postid, threadid, date, posttitle, posttext}, ...]} 
 				#userpost_list = {"userid":userid, "username":username, "lv":lv}#, "posts":[]}
 
 				#Add post information to list of users in forum_list
-				postid = row[3]
-				threadid = row[4]
-				date = row[6]
+				postid = int(row[3])
+				threadid = int(row[4])
+				date = int(row[6])
 				posttitle = row[7]
 				posttext = row[8]
 				#{postid, threadid, date, posttitle, posttext}
