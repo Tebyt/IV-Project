@@ -46,9 +46,9 @@ function viz_thread(threads) {
     threads = addMinMax(threads);
 
     viz_name(threads, "title", table_rows);
-    viz_number(threads, "userNum", table_rows, 40, 20);
-    viz_number(threads, "postNum", table_rows, 40, 20);
-    viz_time_series(threads, table_rows, "time_thread", 200, 20);
+    viz_number(threads, "userNum", table_rows, 80, 20);
+    viz_number(threads, "postNum", table_rows, 80, 20);
+    viz_time_series(threads, table_rows, "time_thread", 150, 15);
 }
 
 function viz_user(users) {
@@ -81,7 +81,7 @@ function viz_table_structure(dataset, div_table, thhtml, thdata) {
     table.append("thead").append("tr")
         .html(thhtml);
     var table_rows = table.append("tbody").selectAll("tr").data(dataset)
-        .enter().append("tr");
+        .enter().append("tr")
 
     table.selectAll("th")
         .data(thdata)
@@ -105,7 +105,7 @@ function alterThreads(threads) {
     return threads;
 }
 
-function viz_time_series(dataset, forum_rows, id, width, height) {
+function viz_time_series(dataset, table_rows, id, width, height) {
     d3.select("body").append("div").attr("id", "tooltip_"+id)
         .html('<p id="date"></p><p id="value"></p>')
         .style({
@@ -119,7 +119,7 @@ function viz_time_series(dataset, forum_rows, id, width, height) {
 
     dataset = formatDate(dataset);
 
-    forum_rows.append("td").attr("id", function (d, i) {
+    table_rows.append("td").attr("id", function (d, i) {
         return id + i;
     });
 
@@ -147,8 +147,8 @@ function viz_time_series(dataset, forum_rows, id, width, height) {
             axes_not_compact: false,
             //y_extended_ticks: true,
             //yax_count: 0,
-            min_x: dataset.minDate,
-            max_x: dataset.maxDate,
+            //min_x: dataset.minDate,
+            //max_x: dataset.maxDate,
             target: "#" + id + i,
             mouseover: function (d, i) {
                 d3.event.preventDefault();
@@ -311,7 +311,7 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
         //return (userNum / maxNum) * 100;
         return (userNum / maxNum) * width;
     }
-    table_rows.append("td").append("svg").attr("height", 14).attr("width", scale(maxNum))
+    table_rows.append("td").append("svg").attr("height", height).attr("width", scale(maxNum))
         .append("rect")
         .attr("width", function (d) {
             return scale(d[numberfield]);
