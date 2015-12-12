@@ -64,12 +64,45 @@
   top: 50%;
   left: 100%;
 }
+.table-wrap{
+    max-height: 200px;
+    width:100%;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+.table-dalam{
+    height:300px;
+    width:500px;
+    border-collapse:collapse;
+}
     </style>
 </head>
 <body onload="dataload()">
     <h1>Thread User Bar</h1>
     <button value="test" onclick="GetBarInfo(233)"></button>
     <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Thread</th>
+                    <th># of user</th>
+                    <th># of posts</th>
+                    <!--th>Timeseries</th-->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3">
+                        <div class="table-wrap" >
+                            <table class="table-dalam">
+                                <tbody id="info">
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

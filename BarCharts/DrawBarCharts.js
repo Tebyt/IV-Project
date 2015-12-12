@@ -41,26 +41,21 @@ function ThreadUserNum(obj){
 }
 
 function drawbar(Thread){
-    var columns = [{"column":"Thread title"},{"column":"Number of Users"},{"column":"Number of Posts"}];
+//    var columns = [{"column":"Thread title"},{"column":"Number of Users"},{"column":"Number of Posts"}];
     var attributes = ["threadid","userNum","postNum"];
    
-    var table = d3.select("div").append("table"),
-    thead = table.append("thead"),
-    tbody = table.append("tbody");
+//    var table = d3.select("div").append("table"),
+//    thead = table.append("thead"),
+//    tbody = table.append("tbody");
     
     var tooltip = d3.select("body").append("div").append("span");
     
 // append the header row
-    thead.append("tr")
-        .selectAll("th")
-        .data(columns)
-        .enter()
-        .append("th")
-            .html(function(d) { return d.column; })
-            .data(attributes)
-            .on("click",function(k){
+    d3.selectAll("th")
+        .data(attributes)
+        .on("click",function(k){
                 rows.sort(function(a, b){
-                    return d3.descending(a[k], b[k]);
+                return d3.descending(a[k], b[k]);
             });
         });
     
@@ -71,7 +66,7 @@ function drawbar(Thread){
     
 
 // create a row for each object in the data
-    var rows = tbody.selectAll("tr")
+    var rows = d3.select("#info").selectAll("tr")
         .data(Thread)
         .enter()
         .append("tr")
@@ -105,14 +100,14 @@ function drawbar(Thread){
     });
     //rows.call(tip);  
     
-    var cln2 = rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.userNum;});
+    var cln2 = rows.append("td").append("svg").attr("height",14).attr("width","80px");
    
     cln2.append("rect")
             .attr("width",function(d){return d.userNum;})
             .attr("height",14)
             .attr("fill","blue");
     
-    var cln3 = rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.postNum;});
+    var cln3 = rows.append("td").append("svg").attr("height",14).attr("width","80px");
     cln3.append("rect")
             .attr("width",function(d){return d.postNum;})
             .attr("height",14)
