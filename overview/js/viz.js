@@ -176,8 +176,8 @@ function viz_thread_time_series(threads, forum_rows) {
                 tooltip.select("#value").text("#ofPosts: " + y_val);
                 tooltip.style({
                     "display": "block",
-                    "top": d3.event.y + 20 + "px",
-                    "left": d3.event.x + 20 + "px"
+                    "top": d3.event.pageY + 20 + "px",
+                    "left": d3.event.pageX + 20 + "px"
                 });
             },
             mouseout: function () {
@@ -287,8 +287,8 @@ function viz_thread_number(threads, forum_rows) {
             tooltip.text(d.title);
             tooltip.style({
                 'display': "block",
-                'top': d3.event.y + 10 + 'px',
-                'left': d3.event.x + 10 + 'px'
+                'top': d3.event.pageY + 10 + 'px',
+                'left': d3.event.pageX + 10 + 'px'
             });
         })
         .on("mouseout", function (d) {

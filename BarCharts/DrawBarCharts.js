@@ -63,6 +63,12 @@ function drawbar(Thread){
                     return d3.descending(a[k], b[k]);
             });
         });
+    
+    /*var tip = d3.tip()
+            .html(function(d) {                        
+                return "<span style='color:red'>" + d.threadid + "</span>";
+            });*/
+    
 
 // create a row for each object in the data
     var rows = tbody.selectAll("tr")
@@ -79,8 +85,10 @@ function drawbar(Thread){
                 "background-color":"white"
             })
         });
-
-    rows.append("td").html(function(d){return d.threadid.slice(0,10);})
+    
+    
+ 
+    rows.append("td").text(function(d){return d.threadid.slice(0,10);})
         .on("mouseover",function(d){
             tooltip.text(d.threadid);
             tooltip.style({
@@ -90,9 +98,15 @@ function drawbar(Thread){
                 'top': d3.event.y+10+'px',
                 'left':d3.event.x+10+'px'
             });
+    }).on("mouseout",function(d){
+            tooltip.style({
+                'display':'none'
+            });
     });
+    //rows.call(tip);  
     
     var cln2 = rows.append("td").append("svg").attr("height",14).attr("width",function(d){return d.userNum;});
+   
     cln2.append("rect")
             .attr("width",function(d){return d.userNum;})
             .attr("height",14)
