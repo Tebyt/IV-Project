@@ -14,14 +14,16 @@ function viz_forum_list(dataset) {
         ["50%", "25%", "25%"]);
 
 
+    var opened = false;
 
     table_rows.on("click", function(d, i) {
             d3.select("#search_result").style({
-                "display": "none"
+                "display": "none",
             });
             d3.select("#cover").style({
                 "display": "none"
             });
+            opened = false;
             viz_user(data[i].users);
             viz_thread(data[i].threads);
         });
@@ -31,12 +33,33 @@ function viz_forum_list(dataset) {
 
     d3.select("#forum_search")
         .on("click", function() {
+            if (!opened) {
+                d3.select("#search_result").style({
+                    "display": "table"
+                });
+                d3.select("#cover").style({
+                    "display": "block"
+                });
+                opened = true;
+            } else {
+                d3.select("#search_result").style({
+                    "display": "none",
+                });
+                d3.select("#cover").style({
+                    "display": "none"
+                });
+                opened = false;
+            }
+        })
+    d3.select("#cover")
+        .on("mousedown", function() {
             d3.select("#search_result").style({
-                "display": "table"
+                "display": "none",
             });
             d3.select("#cover").style({
-                "display": "block"
+                "display": "none"
             });
+            opened = false;
         })
 }
 
@@ -63,7 +86,7 @@ function viz_thread(threads) {
 
 function viz_user(users) {
     var width = [0.2, 0.25, 0.25, 0.3].map(function (d) {
-        return d * d3.select("#user").node().getBoundingClientRect().width - 10;
+        return d * d3.select("#user").node().getBoundingClientRect().width;
     });
     table_rows = viz_table_structure(users, "#user",
         "<th>User Name</th><th># of Threads</th><th># of Posts</th><th>Time Series</th>",
@@ -142,14 +165,8 @@ function alterThreads(threads) {
 }
 
 function viz_time_series(dataset, table_rows, id, width, height) {
-    d3.select("body").append("div").attr("id", "tooltip_"+id)
-        .html('<p id="date"></p><p id="value"></p>')
-        .style({
-            "background-color": "white",
-            "border": "solid 1px black",
-            "display": "none",
-            "position": "absolute"
-        })
+
+    var tooltip = d3.select("#tooltip");
 
     var scale = 50; // Merge data to how many blocks
 
@@ -186,28 +203,27 @@ function viz_time_series(dataset, table_rows, id, width, height) {
             //min_x: dataset.minDate,
             //max_x: dataset.maxDate,
             target: "#" + id + i,
-            mouseover: function (d, i) {
-                d3.event.preventDefault();
-                if (d.value === 0) {
-                    return;
-                }
-                var df = d3.time.format('%b %d, %Y');
-                var date = df(d.date);
-                var y_val = (d.value === 0) ? 'no data' : d.value;
-
-                var tooltip = d3.select("tooltip_"+id);
-                tooltip.select("#date").text("date: " + date);
-                tooltip.select("#value").text("#ofPosts: " + y_val);
-                tooltip.style({
-                    "display": "block",
-                    "top": d3.event.pageY + 20 + "px",
-                    "left": d3.event.pageX + 20 + "px"
-                });
-            },
-            mouseout: function () {
-                var tooltip = d3.select("tooltip_"+id);
-                tooltip.style("display", "none");
-            }
+            //mouseover: function (d, i) {
+            //    d3.event.preventDefault();
+            //    if (d.value === 0) {
+            //        return;
+            //    }
+            //    var df = d3.time.format('%b %d, %Y');
+            //    var date = df(d.date);
+            //    var y_val = (d.value === 0) ? 'no data' : d.value;
+            //
+            //    tooltip.append("p").text("date: " + date);
+            //    tooltip.append("p").text("#ofPosts: " + y_val);
+            //    tooltip.style({
+            //        "display": "block",
+            //        "top": d3.event.pageY + 10 + "px",
+            //        "left": d3.event.pageX + 10 + "px"
+            //    });
+            //},
+            //mouseout: function () {
+            //    var tooltip = d3.select("tooltip_"+id);
+            //    tooltip.style("display", "none");
+            //}
         });
     }
 }
@@ -294,15 +310,8 @@ function formatDate(threads) {
 
 
 function viz_name(dataset, namefield, table_rows, width) {
-    var tooltip = d3.select("body").append("div").append("p");
-    tooltip.style({
-//        "background-color": "white",
-        "border": "solid 1px black",
-        "display": "none",
-        "position": "absolute",
-        "background-color": "white",
-        "color": "blue"
-    })
+
+    var tooltip = d3.select("#tooltip");
 
     // create a row for each object in the data
     table_rows.append("td").text(function (d) {
@@ -312,17 +321,10 @@ function viz_name(dataset, namefield, table_rows, width) {
             "width": width
         })
         .on("mouseover", function (d) {
-            tooltip.text(d.namefield);
-            tooltip.style({
-                'display': "block",
-                'top': d3.event.pageY + 10 + 'px',
-                'left': d3.event.pageX + 10 + 'px'
-            });
+            showTooltip(d[namefield]);
         })
         .on("mouseout", function (d) {
-            tooltip.style({
-                'display': "none",
-            });
+            hideTooltip();
         });
 }
 
@@ -336,7 +338,6 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
 
 
 
-
     var maxNum = table_rows.data().reduce(function (prev, next) {
         if (next[numberfield] > prev) {
             prev = next[numberfield];
@@ -345,12 +346,16 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
     }, 0);
 
     var scale = function (userNum) {
-        //return (userNum / maxNum) * d3.select("#thread").select("thead").selectAll("th:nth-child(" + 1 + ")")
-        //    .node().getBoundingClientRect().width;
-        //return (userNum / maxNum) * 100;
         return (userNum / maxNum) * width;
     }
-    table_rows.append("td").append("svg")
+    table_rows.append("td")
+        .on("mouseover", function(d) {
+            showTooltip(d[numberfield] + "/" + maxNum);
+        })
+        .on("mouseout", function() {
+            hideTooltip();
+        })
+        .append("svg")
         .style({
             "height": height,
             "width": scale(maxNum)
@@ -361,4 +366,21 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
         })
         .attr("height", height)
         .attr("fill", "blue");
+}
+
+function showTooltip(html) {
+    var tooltip = d3.select("#tooltip");
+    tooltip.html(html);
+    tooltip.style({
+        'display': "block",
+        'top': d3.event.pageY + 10 + 'px',
+        'left': d3.event.pageX + 10 + 'px'
+    });
+}
+
+function hideTooltip() {
+    var tooltip = d3.select("#tooltip");
+    tooltip.style({
+        'display': "none",
+    });
 }

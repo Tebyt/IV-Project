@@ -23,42 +23,44 @@
 
 </head>
 
+
 <body>
-    
 
 
-    <div class="container">
 
-        <div class="row" id="div_search">
-            <div class="col-lg-12 scroll">
-                <button class="btn btn-default" type="button" id="forum_search" style="width: 100%">
-                    Forums
-                    <span class="caret"></span>
-                </button>
-                <table id="search_result">
+<div class="container">
+
+    <div class="row" id="div_search">
+        <div class="col-lg-12">
+            <button class="btn btn-default" type="button" id="forum_search" style="width: 100%">
+                Forums
+                <span class="caret"></span>
+            </button>
+            <table id="search_result">
+            </table>
+        </div>
+    </div>
+    <!-- TODO: Here is the list of users -->
+    <div class="row" id="div_forum">
+        <div class="col-md-6">
+            <div class="scroll">
+                <table id="user">
                 </table>
             </div>
         </div>
-        <div id="cover"> </div>
-        <!-- TODO: Here is the list of users -->
-        <div class="row" id="div_forum">
-            <div class="col-md-6 scroll">
-                    <table id="user">
-                    </table>
-            </div>
-            <!-- TODO: Here is the visualization of forums -->
-            <div class="col-md-6 scroll">
-                    <table id="thread">
-                    </table>
-            </div>
-
-            <div class="col-md-12">
-
+        <!-- TODO: Here is the visualization of forums -->
+        <div class="col-md-6">
+            <div class="scroll">
+                <table id="thread">
+                </table>
             </div>
         </div>
-
-
     </div>
+
+
+</div>
+<div id = "tooltip"></div>
+<div id="cover"></div>
 
 
 </body>

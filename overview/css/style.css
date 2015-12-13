@@ -32,6 +32,14 @@
     top: 60px;
 }
 
+#tooltip {
+    border: solid 1px black;
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: blue;
+}
+
 
 /*thead {*/
     /*position: fixed;*/
