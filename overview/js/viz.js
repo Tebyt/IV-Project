@@ -3,12 +3,15 @@ var data;
 d3.json("../csv/dual_data.json", function (d) {
     data = d.data;
     viz_forum_list(data);
+    viz_thread();
+    viz_user();
 });
 
 function viz_forum_list(dataset) {
     var table_rows = viz_table_structure(dataset, "#search_result",
         "<th>Forum Name</th><th># of Threads</th><th># of Users</th>",
-        ["forumtitle", "numberofthreads", "numberofusers"]);
+        ["forumtitle", "numberofthreads", "numberofusers"],
+        ["50%", "25%", "25%"]);
 
 
 
@@ -39,23 +42,36 @@ function viz_forum_list(dataset) {
 
 
 function viz_thread(threads) {
+    var width = [0.2, 0.25, 0.25, 0.3].map(function (d) {
+        return d * d3.select("#thread").node().getBoundingClientRect().width - 10;
+    });
     var table_rows = viz_table_structure(threads, "#thread",
         "<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>",
-        ["title", "userNum", "postNum", "timeSeries"]);
+        ["title", "userNum", "postNum", "timeSeries"],
+        width);
+    if (typeof threads == "undefined") {
+        return;
+    }
     threads = alterThreads(threads);
     threads = addMinMax(threads);
 
-    viz_name(threads, "title", table_rows);
-    viz_number(threads, "userNum", table_rows, 80, 20);
-    viz_number(threads, "postNum", table_rows, 80, 20);
-    viz_time_series(threads, table_rows, "time_thread", 150, 15);
+    viz_name(threads, "title", table_rows, width[0]);
+    viz_number(threads, "userNum", table_rows, width[1], 20);
+    viz_number(threads, "postNum", table_rows, width[2], 20);
+    viz_time_series(threads, table_rows, "time_thread", width[3], 15);
 }
 
 function viz_user(users) {
+    var width = [0.2, 0.25, 0.25, 0.3].map(function (d) {
+        return d * d3.select("#user").node().getBoundingClientRect().width - 10;
+    });
     table_rows = viz_table_structure(users, "#user",
         "<th>User Name</th><th># of Threads</th><th># of Posts</th><th>Time Series</th>",
-        ["user name", "threadNum", "postNum", "timeSeries"]
-    )
+        ["username", "threadNum", "postNum", "timeSeries"],
+        width);
+    if (typeof users == "undefined") {
+        return;
+    }
     users = addMinMax(users);
 
     viz_name(users, "username", table_rows);
@@ -75,24 +91,44 @@ function ThreadUserNum(obj) {
     return num;
 }
 
-function viz_table_structure(dataset, div_table, thhtml, thdata) {
+function viz_table_structure(dataset, div_table, thhtml, thdata, width) {
     d3.select(div_table).html("");
-    var table = d3.select(div_table);
+    var table = d3.select(div_table)
+        .attr("class", "table table-hover table-condensed table-border table-bordered");
     table.append("thead").append("tr")
         .html(thhtml);
-    var table_rows = table.append("tbody").selectAll("tr").data(dataset)
-        .enter().append("tr")
 
+    var descending = false;
     table.selectAll("th")
         .data(thdata)
+        .style({
+            "width": function(d, i) {
+                return width[i]+"px";
+            }.bind(this)
+        })
         .on("click", function (k) {
             if (k === "timeSeries") {
                 return;
             }
-            table_rows.sort(function (a, b) {
-                return d3.descending(a[k], b[k]);
-            });
-        });
+            if (descending) {
+                descending = false;
+                table_rows.sort(function (a, b) {
+                    return d3.ascending(a[k], b[k]);
+                })
+            } else {
+                descending = true;
+                table_rows.sort(function (a, b) {
+                    return d3.descending(a[k], b[k]);
+                })
+            }});
+
+    if (typeof dataset == "undefined") {
+        return;
+    }
+    var table_rows = table.append("tbody")
+        .selectAll("tr").data(dataset)
+        .enter().append("tr")
+
     return table_rows;
 }
 
@@ -257,7 +293,7 @@ function formatDate(threads) {
 }
 
 
-function viz_name(dataset, namefield, table_rows) {
+function viz_name(dataset, namefield, table_rows, width) {
     var tooltip = d3.select("body").append("div").append("p");
     tooltip.style({
 //        "background-color": "white",
@@ -269,9 +305,12 @@ function viz_name(dataset, namefield, table_rows) {
     })
 
     // create a row for each object in the data
-    table_rows.append("td").html(function (d) {
+    table_rows.append("td").text(function (d) {
             return d[namefield].slice(0, 10);
         }.bind(this))
+        .style({
+            "width": width
+        })
         .on("mouseover", function (d) {
             tooltip.text(d.namefield);
             tooltip.style({
@@ -306,12 +345,16 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
     }, 0);
 
     var scale = function (userNum) {
-        //return (userNum / maxNum) * d3.select("#thread").select("thead").selectAll("th:nth-child(" + n + ")")
+        //return (userNum / maxNum) * d3.select("#thread").select("thead").selectAll("th:nth-child(" + 1 + ")")
         //    .node().getBoundingClientRect().width;
         //return (userNum / maxNum) * 100;
         return (userNum / maxNum) * width;
     }
-    table_rows.append("td").append("svg").attr("height", height).attr("width", scale(maxNum))
+    table_rows.append("td").append("svg")
+        .style({
+            "height": height,
+            "width": scale(maxNum)
+        })
         .append("rect")
         .attr("width", function (d) {
             return scale(d[numberfield]);
