@@ -22,104 +22,45 @@
 
 
 </head>
-<style>
-    .scroll {
-        height: 500px;
-        overflow: scroll;
-    }
-    
-    #cover {
-        position: fixed;
-        top: 0;
-        left: 0;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 5;
-        width: 100%;
-        height: 100%;
-        display: none;
-    }
-    
-    #search_result {
-        display: none;
-        background: #FFFFFF;
-    }
-    
-    #div_search {
-        position: absolute;
-        width: inherit;
-        margin-top: 20px;
-        z-index: 20;
-    }
 
-    #div_forum {
-        position: absolute;
-        width: inherit;
-        top: 60px;
-    }
-
-</style>
 
 <body>
-    
 
 
-    <div class="container">
 
-        <div class="row" id="div_search">
-            <div class="col-lg-12">
-                <button class="btn btn-default" type="button" id="forum_search" style="width: 100%">
-                    Forums
-                    <span class="caret"></span>
-                </button>
-                <table class="table scroll" id="search_result">
+<div class="container">
+
+    <div class="row" id="div_search">
+        <div class="col-lg-12">
+            <button class="btn btn-default" type="button" id="forum_search" style="width: 100%">
+                Forums
+                <span class="caret"></span>
+            </button>
+            <table id="search_result">
+            </table>
+        </div>
+    </div>
+    <!-- TODO: Here is the list of users -->
+    <div class="row" id="div_forum">
+        <div class="col-md-6">
+            <div class="scroll">
+                <table id="user">
                 </table>
             </div>
         </div>
-        <div id="cover"> </div>
-        <!-- TODO: Here is the list of users -->
-        <div class="row" id="div_forum">
-            <div class="col-md-6">
-                <div class="scroll">
-                    <table class="table table-hover" id="user">
-                        <thead>
-                            <tr>
-                                <th>User ID</th><th>Time Series</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <!-- TODO: Here is the visualization of forums -->
-            <div class="col-md-6">
-                <div class="scroll">
-                    <table class="table table-hover" id="thread">
-                        <thead>
-                        <tr>
-                            <th style="width:100px">
-                                Thread Title
-                            </th>
-                            <th>
-                                # of Users
-                            </th>
-                            <th>
-                                # of Posts
-                            </th>
-                            <th>
-                                Time Series
-                            </th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-
+        <!-- TODO: Here is the visualization of forums -->
+        <div class="col-md-6">
+            <div class="scroll">
+                <table id="thread">
+                </table>
             </div>
         </div>
-
-
     </div>
+
+
+</div>
+<div id = "tooltip"></div>
+<div id="cover"></div>
 
 
 </body>
