@@ -5,8 +5,8 @@ import json
 {
 	forum:[
 		{
-			users:		[ {userid:_, username:_, lv:_, 	posts:[{postid, threadid, date, posttitle, threadindex}, ...]} ],
-			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid, userindex}, ...]} ]
+			users:		[ {userid:_, username:_, lv:_, 	posts:[{postid, threadid, date, posttitle, threadIndex}, ...]} ],
+			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid, userIndex}, ...]} ]
 			forumid:_ ,
 			forumtitle:_,
 			numberofthreads:_,

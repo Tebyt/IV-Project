@@ -34,8 +34,8 @@ Example format:
 [{
 	forum:[
 		{
-			users:	[ {userid:13, username:"bob", lv:12, posts:[{threadindex, date}]} ],
-			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid}, ...]} ]
+			users:	[ {userid:13, username:"bob", lv:12, posts:[{threadIndex, date}]} ],
+			threads:[ {threadid:12, title:"credit hacks", posts:[{postid, posttitle, date, userid, userIndex}, ...]} ]
 			forumid:5,
 			forumtitle:"credit card",
 			numberofthreads:4,
@@ -47,6 +47,8 @@ Example format:
 	]
 }, ...]
 
+Note that there is no threadindex (i.e. threadindex = -1) if that post is not in that forum.
+Similarly, there is not userindex of that post is not in that forum.
 
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
