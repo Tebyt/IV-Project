@@ -26,6 +26,11 @@ function viz_forum_list(dataset) {
             opened = false;
             viz_user(data[i].users);
             viz_thread(data[i].threads);
+            d3.selectAll("td").style({
+                "padding-top":"0px",
+                "padding-bottom": "0px",
+                "vertical-align": "middle"
+            });
         });
     table_rows.append("td").text(function(d) {return d.forumtitle;});
     table_rows.append("td").text(function(d) {return d.numberofthreads;});
@@ -78,10 +83,12 @@ function viz_thread(threads) {
     threads = alterThreads(threads);
     threads = addMinMax(threads);
 
-    viz_name(threads, "title", table_rows, width[0]);
-    viz_number(threads, "userNum", table_rows, width[1], 20);
-    viz_number(threads, "postNum", table_rows, width[2], 20);
-    viz_time_series(threads, table_rows, "time_thread", width[3], 15);
+    //var height = table_rows.node().getBoundingClientRect().height;
+    var height = 18;
+    viz_name(threads, "title", table_rows, width[0], height)
+    viz_number(threads, "userNum", table_rows, width[1], height);
+    viz_number(threads, "postNum", table_rows, width[2], height);
+    viz_time_series(threads, table_rows, "time_thread", width[3], height);
 }
 
 function viz_user(users) {
@@ -97,7 +104,11 @@ function viz_user(users) {
     }
     users = addMinMax(users);
 
-    viz_name(users, "username", table_rows);
+    var height = "20px";
+    viz_name(users, "username", table_rows, width[0], height);
+    viz_name(users, "username", table_rows, width[0], height);
+    viz_name(users, "username", table_rows, width[0], height);
+    viz_name(users, "username", table_rows, width[0], height);
     //viz_time_series(users, table_rows, "time_user");
 }
 
@@ -166,66 +177,44 @@ function alterThreads(threads) {
 
 function viz_time_series(dataset, table_rows, id, width, height) {
 
-    var tooltip = d3.select("#tooltip");
-
     var scale = 50; // Merge data to how many blocks
 
-    dataset = formatDate(dataset);
+    var scaleX = d3.scale.linear();
+    var scaleY = d3.scale.linear();
+    scaleX.range([0, width-5]);
+    scaleY.range([0, height]);
 
-    table_rows.append("td").attr("id", function (d, i) {
-        return id + i;
-    });
+    var postss = dataset.map(function (d) {
+        return rescale(d.posts, scale, scaleX, scaleY);
+    })
 
-    for (var i = 0; i < dataset.length; ++i) {
-        var data = rescale(dataset[i].posts, dataset.minDate, dataset.maxDate, scale);
-        MG.data_graphic({
-            data: data,
-            //interpolate: 'basic',
-            show_tooltips: false,
-            missing_is_zero: true,
-            width: width,
-            height: height,
-            //full_width: true,
-            //full_height: true,
-            right: 0,
-            top: 0,
-            left: 0,
-            bottom: 0,
-            buffer: 0,
-            x_axis: false,
-            y_axis: false,
-            area: false,
-            point_size: 0,
-            //y_rug: true,
-            axes_not_compact: false,
-            //y_extended_ticks: true,
-            //yax_count: 0,
-            //min_x: dataset.minDate,
-            //max_x: dataset.maxDate,
-            target: "#" + id + i,
-            //mouseover: function (d, i) {
-            //    d3.event.preventDefault();
-            //    if (d.value === 0) {
-            //        return;
-            //    }
-            //    var df = d3.time.format('%b %d, %Y');
-            //    var date = df(d.date);
-            //    var y_val = (d.value === 0) ? 'no data' : d.value;
-            //
-            //    tooltip.append("p").text("date: " + date);
-            //    tooltip.append("p").text("#ofPosts: " + y_val);
-            //    tooltip.style({
-            //        "display": "block",
-            //        "top": d3.event.pageY + 10 + "px",
-            //        "left": d3.event.pageX + 10 + "px"
-            //    });
-            //},
-            //mouseout: function () {
-            //    var tooltip = d3.select("tooltip_"+id);
-            //    tooltip.style("display", "none");
-            //}
+    table_rows.append("td")
+        .data(postss)
+        .append("svg")
+        .style({
+            "height": height,
+            "width": width,
+            "vertical-align": "middle"
+        })
+        .selectAll("rect")
+        .data(function(posts) {return posts;})
+        .enter().append("rect")
+        .attr("fill", "blue")
+        .attr("class", "bar")
+        .attr("x", function(d) { return d.x; })
+        .attr("width", function(d) { return width/scale; })
+        .attr("y", function(d) { return d.y; })
+        .attr("height", function(d) { return height - d.y; })
+        .on("mouseover", function(d) {
+            var format = d3.time.format("%Y-%m-%d");
+            showTooltip("<p>Date: "+format(new Date(d.date))+"</p>"
+            +"<p># of Post:" + d.value + "</p>");
+        })
+        .on("mouseout", function() {
+            hideTooltip();
         });
-    }
+
+
 }
 
 function addMinMax(dataset) {
@@ -243,7 +232,8 @@ function getMinDate(dataset) {
             }
         })
     })
-    return new Date(new Date(minDate * 1000).setHours(0, 0, 0, 0));
+    //return new Date(new Date(minDate * 1000).setHours(0, 0, 0, 0));
+    return minDate;
 }
 
 function getMaxDate(dataset) {
@@ -255,29 +245,26 @@ function getMaxDate(dataset) {
             }
         })
     })
-    return new Date(new Date(maxDate * 1000).setHours(0, 0, 0, 0));
+    //return new Date(new Date(maxDate * 1000).setHours(0, 0, 0, 0));
+    return maxDate;
 }
 
-function rescale(posts, minDate, maxDate, scale) {
-    if (scale == 0) {
-        divider = 1;
-    } else {
-        divider = (maxDate - minDate) / scale;
-    }
+function rescale(posts, scale, scaleX, scaleY) {
+    posts = formatDate(posts);
+    var minDate = d3.min(posts, function(d) { return d.date; });
+    var maxDate = d3.max(posts, function(d) { return d.date; });
+    var slot = Math.round((maxDate - minDate) / scale);
     posts = posts.map(function (d) {
+            //"date": new Date(new Date(Math.round((d.date - minDate) / divider) * divider + minDate.getTime()).setHours(0, 0, 0, 0))
         return {
-            "date": new Date(new Date(Math.round((d.date - minDate) / divider) * divider + minDate.getTime()).setHours(0, 0, 0, 0))
+            "date": Math.round((d.date - minDate) / slot) * slot + minDate
         }
     })
-    //posts = posts.map(function (d) {
-    //    return {
-    //        "date": d.date < minDate ? minDate : d.date > maxDate ? maxDate : d.date
-    //    }
-    //})
+
     posts = posts.reduce(function (prev, next) {
         var matched = false;
         prev.forEach(function (d) {
-            if (d.date.getTime() == next.date.getTime()) {
+            if (d.date == next.date) {
                 ++d.value;
                 matched = true;
                 return;
@@ -292,24 +279,24 @@ function rescale(posts, minDate, maxDate, scale) {
         })
         return prev;
     }, []);
-    posts.push({
-        "date": new Date(maxDate),
-        "value": 0
+    scaleX.domain([minDate, maxDate]);
+    scaleY.domain([d3.max(posts, function(post) { return post.value; }), 0]);
+    posts.forEach(function (post) {
+        post.x = scaleX(post.date);
+        post.y = scaleY(post.value);
     })
     return posts;
 }
 
-function formatDate(threads) {
-    threads.forEach(function (thread) {
-        thread.posts.forEach(function (post) {
-            post.date = new Date(new Date(post.date * 1000).setHours(0, 0, 0, 0));
+function formatDate(posts) {
+    posts.forEach(function (post) {
+            post.date = post.date * 1000;
         })
-    })
-    return threads;
+    return posts;
 }
 
 
-function viz_name(dataset, namefield, table_rows, width) {
+function viz_name(dataset, namefield, table_rows, width, height) {
 
     var tooltip = d3.select("#tooltip");
 
@@ -318,7 +305,9 @@ function viz_name(dataset, namefield, table_rows, width) {
             return d[namefield].slice(0, 10);
         }.bind(this))
         .style({
-            "width": width
+            "width": width,
+            "height": height,
+            "text-align": "middle"
         })
         .on("mouseover", function (d) {
             showTooltip(d[namefield]);
@@ -358,7 +347,9 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
         .append("svg")
         .style({
             "height": height,
-            "width": scale(maxNum)
+            "width": scale(maxNum),
+            "padding": 0,
+            "vertical-align": "middle"
         })
         .append("rect")
         .attr("width", function (d) {

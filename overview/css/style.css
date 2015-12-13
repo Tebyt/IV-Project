@@ -40,7 +40,12 @@
     color: blue;
 }
 
-
+#tooltip > p {
+    margin: 0;
+}
+td {
+    padding-top: 1px;
+}
 /*thead {*/
     /*position: fixed;*/
 /*}*/
