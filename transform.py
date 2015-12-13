@@ -5,8 +5,8 @@ import json
 {
 	forum:[
 		{
-			users:		[ {userid:_, username:_, lv:_, 	posts:[{postid, threadid, date, posttitle, posttext}, ...]} ],
-			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid}, ...]} ]
+			users:		[ {userid:_, username:_, lv:_, 	posts:[{postid, threadid, date, posttitle, threadindex}, ...]} ],
+			threads:	[ {threadid:_, title:_, posts:[{postid, posttitle, date, userid, userindex}, ...]} ]
 			forumid:_ ,
 			forumtitle:_,
 			numberofthreads:_,
@@ -17,8 +17,8 @@ import json
 		}
 	]
 }
-
-
+Note that there is no threadindex (i.e. threadindex = -1) if that post is not in that forum.
+Similarly, there is not userindex of that post is not in that forum.
 
 *To add
 '''
@@ -109,6 +109,8 @@ def readTimeSeries():
 				userid = int(row[0])
 				username = row[1]
 				lv = int(row[2])
+				#Add the correct index later, after the users are added properly
+				userIndex = -1
 				#{lv:_, posts:[{postid, date, threadid}, ...]}
 				#user_info = {"userid":userid, "username":username, "lv":lv}#, "posts":[]}
 				#addUserToForum(user_info, row)
@@ -119,7 +121,7 @@ def readTimeSeries():
 				dateposted = int(row[10])
 				posttext = row[11]
 				#{postid, posttitle, date, userid}
-				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid}#, "posttext":posttext} 
+				post_info = {"postid":postid, "posttitle":posttitle, "date":dateposted, "userid":userid, "userIndex":userIndex}#, "posttext":posttext} 
 				addPostToThread(post_info, row)
 
 			#Add the post information to the users
@@ -214,6 +216,13 @@ def addUserPostToForums():
 		if not isUserAdded:
 			print "Not added to any forum:"+useritem
 
+
+def find(listToFind, key, value):
+	for i, dic in enumerate(listToFind):
+		if dic[key] == value:
+			return i
+	return -1
+
 forum_list = []
 readForums()
 
@@ -229,6 +238,23 @@ readUserPosts()
 
 #Group users by forums
 addUserPostToForums()
+
+#Add threadindex to the user array in forum
+for index, item in enumerate(forum_list):
+	for userIndex, userItem in enumerate(forum_list[index]["users"]):
+		for postIndex, postItem in enumerate(forum_list[index]["users"][userIndex]["posts"]):
+
+			threadIndex = find(forum_list[index]["threads"], "threadid", postItem["threadid"]) 
+			forum_list[index]["users"][userIndex]["posts"][postIndex]["threadindex"] = threadIndex
+
+
+#Add userindex to the thread array in forum
+for index, item in enumerate(forum_list):
+	for threadIndex, threadItem in enumerate(forum_list[index]["threads"]):
+		for postIndex, postItem in enumerate(forum_list[index]["threads"][threadIndex]["posts"]):
+			userIndex = find(forum_list[index]["users"], "userid", postItem["userid"]) 
+			forum_list[index]["threads"][threadIndex]["posts"][postIndex]["userIndex"] = userIndex
+
 
 with open("csv/dual_data.json", "w") as outfile:
 	json.dump({"data":forum_list}, outfile)
