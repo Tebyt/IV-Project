@@ -29,7 +29,7 @@ forum_list = []
 
 isLimit = True
 #LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
-MAX_NUMBER_OF_POSTS_PER_FORUM = 5000
+MAX_NUMBER_OF_POSTS_PER_FORUM = 100
 
 def find(listToFind, key, value):
 	for i, dic in enumerate(listToFind):
@@ -45,7 +45,7 @@ def readForums():
 
 		for row in reader:
 			if rownum>0:
-				forum_info = {"forumid":int(row[0]), "forumtitle":row[1], "numberofthreads":0, "numberofposts":0,"numberofusers":0, "users":[], "threads":[], "first_post_date":int(row[5]),"last_post_date":int(row[6]) }
+				forum_info = {"forumid":int(row[0]), "forumtitle":row[1], "numberofthreads":0, "numberofposts":0,"numberofusers":0, "users":[], "threads":[], "first_post_date":int(row[5])*1000,"last_post_date":int(row[6])*1000 }
 				#print forum_info
 				forum_list.append(forum_info)
 			rownum = rownum + 1
@@ -124,7 +124,7 @@ def addInfoForums():
 					#Add post
 					postid = int(row[8])
 					posttitle = row[9]
-					dateposted = int(row[10])
+					dateposted = int(row[10]) *1000
 					threadid = int(row[6])
 					
 					#Add the userid, username to the right forum
