@@ -47,9 +47,6 @@ Example format:
 	]
 }, ...]
 
-Note that there is no threadindex (i.e. threadindex = -1) if that post is not in that forum.
-Similarly, there is not userindex of that post is not in that forum.
-
 ## Data Format
 There will be one **SINGLE** global variale containg all the data we need, it's format is as follow:
 
