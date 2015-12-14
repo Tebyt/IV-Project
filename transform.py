@@ -27,7 +27,7 @@ Similarly, there is not userindex of that post is not in that forum.
 
 forum_list = []
 
-isLimit = True
+isLimit = False
 #LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
 MAX_NUMBER_OF_POSTS_PER_FORUM = 100
 

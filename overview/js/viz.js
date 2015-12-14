@@ -1,5 +1,42 @@
 var data;
 
+var Dispatcher = {
+    init: function(forum) {
+        this.forum = forum;
+    },
+    vizThread: function(filter) {
+        var threads = this.forum.threads;
+        if (typeof filter != "undefined") {
+            threads = filter.map(function (i) {
+                return threads[i];
+            })
+        }
+        viz_thread(threads);
+        d3.selectAll("td").style({
+            "padding": "0px",
+            "vertical-align": "middle"
+        });
+    },
+    vizUser: function(filter) {
+        var users = this.forum.users;
+        if (typeof filter != "undefined") {
+            users = filter.map(function (i) {
+                return users[i];
+            })
+        }
+        viz_user(users);
+        d3.selectAll("td").style({
+            "padding": "0px",
+            "vertical-align": "middle"
+        });
+    },
+    viz : function() {
+        this.vizThread();
+        this.vizUser();
+    }
+
+}
+
 d3.json("../csv/dual_data.json", function (d) {
     data = d.data;
     viz_forum_list(data);
@@ -23,14 +60,11 @@ function viz_forum_list(dataset) {
             d3.select("#cover").style({
                 "display": "none"
             });
+            d3.select("#forum_search").html(dataset[i].forumtitle
+                + ' <span class="caret"></span>');
             opened = false;
-            viz_user(data[i].users);
-            viz_thread(data[i].threads);
-            d3.selectAll("td").style({
-                "padding-top":"0px",
-                "padding-bottom": "0px",
-                "vertical-align": "middle"
-            });
+            Dispatcher.init(dataset[i]);
+            Dispatcher.viz();
         });
     table_rows.append("td").text(function(d) {return d.forumtitle;});
     table_rows.append("td").text(function(d) {return d.numberofthreads;});
@@ -71,7 +105,7 @@ function viz_forum_list(dataset) {
 
 function viz_thread(threads) {
     var width = [0.2, 0.25, 0.25, 0.3].map(function (d) {
-        return d * d3.select("#thread").node().getBoundingClientRect().width - 10;
+        return d * d3.select("#thread").node().getBoundingClientRect().width;
     });
     var table_rows = viz_table_structure(threads, "#thread",
         "<th>Thread title</th><th># of Users</th><th># of Posts</th><th>Time Series</th>",
@@ -80,18 +114,27 @@ function viz_thread(threads) {
     if (typeof threads == "undefined") {
         return;
     }
+    table_rows.on("click", function(d) {
+        var filter = d.posts.reduce(function (prev, next) {
+            if (prev.indexOf(next.userIndex) < 0) {
+                prev.push(next.userIndex);
+            }
+            return prev;
+        },[])
+        Dispatcher.vizUser(filter);
+    })
     threads = alterThreads(threads);
-    threads = addMinMax(threads);
+
 
     //var height = table_rows.node().getBoundingClientRect().height;
     var height = 18;
     viz_name(threads, "title", table_rows, width[0], height)
     viz_number(threads, "userNum", table_rows, width[1], height);
     viz_number(threads, "postNum", table_rows, width[2], height);
-    viz_time_series(threads, table_rows, "time_thread", width[3], height);
+    viz_time_series(threads, table_rows, width[3], height);
 }
 
-function viz_user(users) {
+function viz_user(users, filter) {
     var width = [0.2, 0.25, 0.25, 0.3].map(function (d) {
         return d * d3.select("#user").node().getBoundingClientRect().width;
     });
@@ -102,14 +145,23 @@ function viz_user(users) {
     if (typeof users == "undefined") {
         return;
     }
-    users = addMinMax(users);
+    table_rows.on("click", function(d) {
+        var filter = d.posts.reduce(function (prev, next) {
+            if (prev.indexOf(next.threadindex) < 0) {
+                prev.push(next.threadindex);
+            }
+            return prev;
+        },[])
+        Dispatcher.vizThread(filter);
+    })
 
-    var height = "20px";
+    users = alterUsers(users);
+
+    var height = 18;
     viz_name(users, "username", table_rows, width[0], height);
-    viz_name(users, "username", table_rows, width[0], height);
-    viz_name(users, "username", table_rows, width[0], height);
-    viz_name(users, "username", table_rows, width[0], height);
-    //viz_time_series(users, table_rows, "time_user");
+    viz_number(users, "threadNum", table_rows, width[1], height);
+    viz_number(users, "postNum", table_rows, width[2], height);
+    viz_time_series(users, table_rows, width[3], height);
 }
 
 // temporary functions
@@ -172,16 +224,29 @@ function alterThreads(threads) {
         thread.postNum = thread.posts.length;
         return thread;
     });
+
     return threads;
 }
 
-function viz_time_series(dataset, table_rows, id, width, height) {
+function alterUsers(users) {
+    users = users.map(function (user) {
+        user.threadNum = user.posts.reduce(function (prev, next) {
+            prev.add(next.threadindex);
+            return prev;
+        },new Set()).size;
+        user.postNum = user.posts.length;
+        return user;
+    });
+    return users;
+}
+
+function viz_time_series(dataset, table_rows, width, height) {
 
     var scale = 50; // Merge data to how many blocks
 
     var scaleX = d3.scale.linear();
     var scaleY = d3.scale.linear();
-    scaleX.range([0, width-5]);
+    scaleX.range([0, width-3]);
     scaleY.range([0, height]);
 
     var postss = dataset.map(function (d) {
@@ -217,47 +282,13 @@ function viz_time_series(dataset, table_rows, id, width, height) {
 
 }
 
-function addMinMax(dataset) {
-    dataset.minDate = getMinDate(dataset);
-    dataset.maxDate = getMaxDate(dataset);
-    return dataset;
-}
-// functions for viz_time_series
-function getMinDate(dataset) {
-    var minDate = dataset[0].posts[0].date;
-    dataset.forEach(function (thread) {
-        thread.posts.forEach(function (post) {
-            if (post.date < minDate) {
-                minDate = post.date;
-            }
-        })
-    })
-    //return new Date(new Date(minDate * 1000).setHours(0, 0, 0, 0));
-    return minDate;
-}
-
-function getMaxDate(dataset) {
-    var maxDate = dataset[0].posts[0].date;
-    dataset.forEach(function (thread) {
-        thread.posts.forEach(function (post) {
-            if (post.date > maxDate) {
-                maxDate = post.date;
-            }
-        })
-    })
-    //return new Date(new Date(maxDate * 1000).setHours(0, 0, 0, 0));
-    return maxDate;
-}
-
 function rescale(posts, scale, scaleX, scaleY) {
-    posts = formatDate(posts);
     var minDate = d3.min(posts, function(d) { return d.date; });
     var maxDate = d3.max(posts, function(d) { return d.date; });
-    var slot = Math.round((maxDate - minDate) / scale);
+    var slot = Math.floor((maxDate - minDate) / scale);
     posts = posts.map(function (d) {
-            //"date": new Date(new Date(Math.round((d.date - minDate) / divider) * divider + minDate.getTime()).setHours(0, 0, 0, 0))
         return {
-            "date": Math.round((d.date - minDate) / slot) * slot + minDate
+            "date": Math.floor((d.date - minDate) / slot) * slot + minDate
         }
     })
 
@@ -288,25 +319,18 @@ function rescale(posts, scale, scaleX, scaleY) {
     return posts;
 }
 
-function formatDate(posts) {
-    posts.forEach(function (post) {
-            post.date = post.date * 1000;
-        })
-    return posts;
-}
+
 
 
 function viz_name(dataset, namefield, table_rows, width, height) {
-
-    var tooltip = d3.select("#tooltip");
 
     // create a row for each object in the data
     table_rows.append("td").text(function (d) {
             return d[namefield].slice(0, 10);
         }.bind(this))
         .style({
-            "width": width,
-            "height": height,
+            "width": width + "px",
+            "height": height + "px",
             "text-align": "middle"
         })
         .on("mouseover", function (d) {
