@@ -13,13 +13,13 @@ The goal of Visualizing Underground Forums is to provide an exploratory tool to 
 We have defined two entities in this application: 1) the forum users and 2) the forum threads/posts. Each entity is associated with questions and our interface allows the investigator to answer those questions. Moreover, this application allows the investigator to instantly see the relationship between these two entities via instantaneous feedback on clicking either one of the entities.
 
 The questions are as follows:
-##Questions about the users
-###Who are the users?
-###When are they active? How often are they active (frequency)?
+####Questions about the users
+#####Who are the users?
+#####When are they active? How often are they active (frequency)?
 
-##Questions about the threads/posts
-###What are the threads and in what forum?
-###How many posts and threads are there within each forum?
+####Questions about the threads/posts
+#####What are the threads and in what forum?
+#####How many posts and threads are there within each forum?
 
 
 #Link to the Video
