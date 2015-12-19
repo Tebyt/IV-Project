@@ -2,7 +2,7 @@
 #Visualizing Underground Forums
 
 #Authors: 
-Autumn Wu, Pan Chen, Maeda Hanafi
+Autumn Wu (Tebyt), Pan Chen (Tebyt), Maeda Hanafi (theTrueCaptian)
 
 #Image of your application
 /screenshot1.png
