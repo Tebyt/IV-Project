@@ -5,7 +5,7 @@
 Autumn Wu (Tebyt), Pan Chen (Tebyt), Maeda Hanafi (theTrueCaptian)
 
 #Image of your application
-/screenshot1.png
+![alt tag](https://github.com/Tebyt/IV-Project/blob/master/screenshot1.png)
 
 #Description
 The goal of Visualizing Underground Forums is to provide an exploratory tool to an investigator interested in such a dataset. We assume that the invstigator has an intention to learn more about the dataset and perhaps even want to pinpoint a certian entity for an investigation and clues. 
