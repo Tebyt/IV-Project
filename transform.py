@@ -29,7 +29,7 @@ forum_list = []
 
 isLimit = False
 #LEAST_NUMBER_OF_POSTS_PER_FORUM = 2000
-MAX_NUMBER_OF_POSTS_PER_FORUM = 100
+MAX_NUMBER_OF_POSTS_PER_FORUM = 5000
 
 def find(listToFind, key, value):
 	for i, dic in enumerate(listToFind):
