@@ -29,5 +29,6 @@ TODO
 #Link to the Final Report.
 TODO
 #Link to the data (if public)
-This data is not public for security purposes. 
+This data is not public for security purposes.
 
+The derived data is also not shared (due to large size) but can be obtained by running transform.py with python. The data that transform.py will use is in /csv, which contains intermediary, derived data from the original dataset.
