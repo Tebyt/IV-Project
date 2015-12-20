@@ -264,7 +264,7 @@ function viz_time_series(dataset, table_rows, width, height) {
         .selectAll("rect")
         .data(function(posts) {return posts;})
         .enter().append("rect")
-        .attr("fill", "blue")
+        .attr("fill", "rgba(0,0,0,0.6)")
         .attr("class", "bar")
         .attr("x", function(d) { return d.x; })
         .attr("width", function(d) { return width/scale; })
@@ -380,7 +380,7 @@ function viz_number(dataset, numberfield, table_rows, width, height) {
             return scale(d[numberfield]);
         })
         .attr("height", height)
-        .attr("fill", "blue");
+        .attr("fill", "rgba(0,0,0,0.6)");
 }
 
 function showTooltip(html) {
