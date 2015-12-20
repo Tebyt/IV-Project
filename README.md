@@ -21,6 +21,10 @@ The questions are as follows:
 #####What are the threads and in what forum?
 #####How many posts and threads are there within each forum?
 
+####There are also questions that are about both of these entities:
+#####For a given user, what are his posts over time?
+#####For a given thread, who are the users active in that thread?
+
 
 #Link to the Video
 TODO
