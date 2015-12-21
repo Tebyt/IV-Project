@@ -1,4 +1,5 @@
 var data;
+var lastclick;
 
 var Dispatcher = {
     init: function(forum) {
@@ -115,6 +116,13 @@ function viz_thread(threads) {
         return;
     }
     table_rows.on("click", function(d) {
+        d3.select(lastclick).style({
+            "background-color":"white"
+        });
+        d3.select(this).style({
+            "background-color":"#d6d6c2"
+        });
+        lastclick = this;
         var filter = d.posts.reduce(function (prev, next) {
             if (prev.indexOf(next.userIndex) < 0) {
                 prev.push(next.userIndex);
@@ -122,6 +130,7 @@ function viz_thread(threads) {
             return prev;
         },[])
         Dispatcher.vizUser(filter);
+        
     })
     threads = alterThreads(threads);
 
@@ -146,6 +155,13 @@ function viz_user(users, filter) {
         return;
     }
     table_rows.on("click", function(d) {
+        d3.select(lastclick).style({
+            "background-color":"white"
+        });
+        d3.select(this).style({
+            "background-color":"#d6d6c2"
+        });
+        lastclick = this;
         var filter = d.posts.reduce(function (prev, next) {
             if (prev.indexOf(next.threadindex) < 0) {
                 prev.push(next.threadindex);
